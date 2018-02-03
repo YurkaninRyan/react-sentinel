@@ -1,10 +1,10 @@
-import { PureComponent } from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 const requestCheck = window.requestIdleCallback || window.requestAnimationFrame;
 const cancelCheck = window.cancelIdleCallback || window.cancelAnimationFrame;
 
-class Sentinel extends PureComponent {
+class Sentinel extends Component {
   constructor(props) {
     super();
 

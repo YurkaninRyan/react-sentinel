@@ -6,8 +6,7 @@
   position: relative;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 16px;
 
   &.is-small {
     font-size: 16px;
@@ -21,5 +20,6 @@
   &.is-large {
     font-size: 32px;
     font-weight: 700;
+    padding: 24px;
   }
 }
