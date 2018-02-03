@@ -1,0 +1,24 @@
+{
+  "name": "react-sentinel",
+  "version": "0.1.0",
+  "description": "React Component that abstracts away requestAnimationFrame and requestIdleCallback.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YurkaninRyan/react-sentinel.git"
+  },
+  "keywords": [
+    "react",
+    "poll",
+    "sentinel"
+  ],
+  "author": "Ryan Yurkanin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YurkaninRyan/react-sentinel/issues"
+  },
+  "homepage": "https://github.com/YurkaninRyan/react-sentinel#readme"
+}
