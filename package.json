@@ -72,7 +72,8 @@
         "yarn lint"
       ],
       "post_complete_commands": [
-        "npm publish"
+        "npm publish",
+        "yarn gh-pages"
       ],
       "files_to_version": [
         "README.md",
