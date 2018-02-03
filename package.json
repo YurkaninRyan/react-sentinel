@@ -1,6 +1,6 @@
 {
   "name": "react-sentinel",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "React Component that abstracts away requestAnimationFrame and requestIdleCallback.",
   "main": "dist/react-sentinel.main.js",
   "browser": "dist/react-sentinel.browser.js",
@@ -65,6 +65,9 @@
       "pre_commit_commands": [
         "yarn test",
         "yarn lint"
+      ],
+      "post_complete_commands": [
+        "npm publish"
       ],
       "files_to_version": [
         "README.md"
