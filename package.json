@@ -6,7 +6,7 @@
   "browser": "dist/react-sentinel.browser.js",
   "module": "dist/react-sentinel.module.js",
   "scripts": {
-    "release": "yarn && generate-release",
+    "release": "generate-release",
     "test": "./node_modules/.bin/jest",
     "lint": "node ./node_modules/eslint/bin/eslint src",
     "prepublish": "rollup -c"
