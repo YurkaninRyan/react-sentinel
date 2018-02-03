@@ -6,16 +6,20 @@
   "browser": "dist/react-sentinel.browser.js",
   "module": "dist/react-sentinel.module.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "release": "yarn && generate-release",
+    "test": "./node_modules/.bin/jest",
+    "lint": "node ./node_modules/eslint/bin/eslint src",
+    "prepublish": "rollup -c"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/YurkaninRyan/react-sentinel.git"
   },
   "keywords": [
-    "react",
-    "poll",
-    "sentinel"
+    "React",
+    "HOC",
+    "Decorator",
+    "Component"
   ],
   "author": "Ryan Yurkanin",
   "license": "MIT",
@@ -49,5 +53,22 @@
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
+  },
+  "config": {
+    "generateRelease": {
+      "no_confirm": false,
+      "skip_git_pull": false,
+      "skip_git_push": false,
+      "skip_git_flow_finish": false,
+      "release_message": true,
+      "remote": "origin",
+      "pre_commit_commands": [
+        "yarn test",
+        "yarn lint"
+      ],
+      "files_to_version": [
+        "README.md"
+      ]
+    }
   }
 }
