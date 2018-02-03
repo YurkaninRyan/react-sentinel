@@ -82,6 +82,8 @@ var Sentinel = function (_PureComponent) {
 
     var _this = possibleConstructorReturn(this, (Sentinel.__proto__ || Object.getPrototypeOf(Sentinel)).call(this));
 
+    _this.state = {};
+
     _this.setLoopingFunctions = function (lowPriority) {
       // Low priority means use requestIdleCallback
       // fallback to requestAnimationFrame

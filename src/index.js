@@ -11,6 +11,8 @@ class Sentinel extends PureComponent {
     this.setLoopingFunctions(props.lowPriority);
   }
 
+  state = {}
+
   componentDidMount() { this.watch(); }
   componentWillReceiveProps(nextProps) {
     if (nextProps.lowPriority === this.props.lowPriority) return;

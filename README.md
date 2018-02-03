@@ -1,4 +1,4 @@
-# React Sentinel - 0.0.1
+# React Sentinel - 0.1.3
 
 `<Sentinel>` is a component that abstracts away the recursive looping of `requestAnimationFrame` and `requestIdleCallback` to allow developers to efficently observe the dom and make changes to state accordingly.
 
@@ -10,7 +10,7 @@ import Sentinel from "react-sentinel";
 import DumbCard from "./DumbCard"
 
 class ResponsiveTextCard extends PureComponent {
-  this.getSize = () => {
+  getSize = () => {
     if (this.container.offSetWidth < 450) return { size: "small" }
     if (this.container.offsetWidth < 950) return { size: "medium" }
 
