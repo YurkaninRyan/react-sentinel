@@ -4,3 +4,8 @@
   width: 60vw;
   height: 60vh;
 }
+
+.ResizeableResponsiveCard__content {
+  display: flex;
+  flex-direction: column;
+}

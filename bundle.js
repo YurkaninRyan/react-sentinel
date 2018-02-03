@@ -976,8 +976,8 @@ var possibleConstructorReturn = function (self, call) {
 var requestCheck = window.requestIdleCallback || window.requestAnimationFrame;
 var cancelCheck = window.cancelIdleCallback || window.cancelAnimationFrame;
 
-var Sentinel = function (_PureComponent) {
-  inherits(Sentinel, _PureComponent);
+var Sentinel = function (_Component) {
+  inherits(Sentinel, _Component);
 
   function Sentinel(props) {
     classCallCheck(this, Sentinel);
@@ -1063,7 +1063,7 @@ var Sentinel = function (_PureComponent) {
     }
   }]);
   return Sentinel;
-}(react_3);
+}(react_2);
 
 Sentinel.propTypes = {
   observe: propTypes.func.isRequired,
@@ -1075,7 +1075,7 @@ Sentinel.defaultProps = {
   lowPriority: false
 };
 
-var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  width: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  align-items: center;\n  justify-content: center; }\n  .DumbCard.is-small {\n    font-size: 16px; }\n  .DumbCard.is-medium {\n    font-size: 24px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 32px;\n    font-weight: 700; }\n";
+var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  width: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px; }\n  .DumbCard.is-small {\n    font-size: 16px; }\n  .DumbCard.is-medium {\n    font-size: 24px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 32px;\n    font-weight: 700;\n    padding: 24px; }\n";
 __$$styleInject(css);
 
 var DumbCard = function (_Component) {
@@ -1113,24 +1113,24 @@ DumbCard.defaultProps = {
   size: 'large'
 };
 
-var css$2 = ".ResizeableResponsiveCard {\n  min-height: 300px;\n  min-width: 300px;\n  width: 60vw;\n  height: 60vh; }\n";
+var css$2 = ".ResizeableResponsiveCard {\n  min-height: 300px;\n  min-width: 300px;\n  width: 60vw;\n  height: 60vh; }\n\n.ResizeableResponsiveCard__content {\n  display: flex;\n  flex-direction: column; }\n";
 __$$styleInject(css$2);
 
-var App = function (_PureComponent) {
-  inherits(App, _PureComponent);
+var ResizeableResponsiveCard = function (_Component) {
+  inherits(ResizeableResponsiveCard, _Component);
 
-  function App() {
+  function ResizeableResponsiveCard() {
     var _ref;
 
     var _temp, _this, _ret;
 
-    classCallCheck(this, App);
+    classCallCheck(this, ResizeableResponsiveCard);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.getSize = function () {
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = ResizeableResponsiveCard.__proto__ || Object.getPrototypeOf(ResizeableResponsiveCard)).call.apply(_ref, [this].concat(args))), _this), _this.getSize = function () {
       var width = _this.container.offsetWidth;
       if (width < 450) return { size: 'small', text: 'At ' + width + 'px or less I get small!' };
       if (width < 650) return { size: 'medium', text: 'At ' + width + 'px or less i\'m average!' };
@@ -1139,15 +1139,22 @@ var App = function (_PureComponent) {
     }, _this.renderCard = function (_ref2) {
       var size = _ref2.size,
           text = _ref2.text;
+      var children = _this.props.children;
+
       return react.createElement(
         DumbCard,
         { size: size },
-        text
+        react.createElement(
+          'div',
+          { className: 'ResizeableResponsiveCard__content' },
+          children,
+          text
+        )
       );
     }, _temp), possibleConstructorReturn(_this, _ret);
   }
 
-  createClass(App, [{
+  createClass(ResizeableResponsiveCard, [{
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -1161,30 +1168,34 @@ var App = function (_PureComponent) {
       );
     }
   }]);
-  return App;
-}(react_3);
+  return ResizeableResponsiveCard;
+}(react_2);
 
-var css$4 = ".App {\n  height: 100vh;\n  width: 100vw;\n  background-color: #e2e1e0;\n  color: #444;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-direction: column; }\n\n.App__header {\n  margin-bottom: 16px; }\n\n.App__title {\n  font-size: 32px;\n  font-weight: 700;\n  margin-bottom: 8px; }\n";
+ResizeableResponsiveCard.propTypes = {
+  children: propTypes.element.isRequired
+};
+
+var css$4 = ".App {\n  height: 100vh;\n  width: 100vw;\n  background-color: #e2e1e0;\n  color: #444;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-direction: column; }\n\n.App__header {\n  margin-bottom: auto; }\n\n.App__title {\n  font-size: 32px;\n  font-weight: 700;\n  margin-bottom: 8px; }\n\n.App__tidbit {\n  font-size: 16px;\n  font-weight: 100; }\n";
 __$$styleInject(css$4);
 
 var css$6 = "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n";
 __$$styleInject(css$6);
 
-var App$1 = function (_PureComponent) {
-  inherits(App$$1, _PureComponent);
+var App = function (_Component) {
+  inherits(App, _Component);
 
-  function App$$1() {
+  function App() {
     var _ref;
 
     var _temp, _this, _ret;
 
-    classCallCheck(this, App$$1);
+    classCallCheck(this, App);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = App$$1.__proto__ || Object.getPrototypeOf(App$$1)).call.apply(_ref, [this].concat(args))), _this), _this.getBodyWidth = function () {
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.getBodyWidth = function () {
       return { width: document.body.offsetWidth };
     }, _this.renderApp = function (_ref2) {
       var width = _ref2.width;
@@ -1192,40 +1203,43 @@ var App$1 = function (_PureComponent) {
         'div',
         { className: 'App' },
         react.createElement(
-          'div',
-          { className: 'App__header' },
+          ResizeableResponsiveCard,
+          null,
           react.createElement(
-            'h1',
-            { className: 'App__title' },
-            'React Sentinel'
-          ),
-          react.createElement(
-            'p',
-            null,
-            'Resize the window and watch as our values update automatically!'
-          ),
-          react.createElement(
-            'p',
-            null,
-            'The window size is ',
-            width,
-            'px!'
+            'div',
+            { className: 'App__header' },
+            react.createElement(
+              'h1',
+              { className: 'App__title' },
+              'React Sentinel'
+            ),
+            react.createElement(
+              'p',
+              { className: 'App__tidbit' },
+              'Resize the window and watch as our values update automatically!'
+            ),
+            react.createElement(
+              'p',
+              { className: 'App__tidbit' },
+              'The window size is ',
+              width,
+              'px!'
+            )
           )
-        ),
-        react.createElement(App, null)
+        )
       );
     }, _temp), possibleConstructorReturn(_this, _ret);
   }
 
-  createClass(App$$1, [{
+  createClass(App, [{
     key: 'render',
     value: function render() {
       return react.createElement(Sentinel, { observe: this.getBodyWidth, render: this.renderApp });
     }
   }]);
-  return App$$1;
-}(react_3);
+  return App;
+}(react_2);
 
-reactDom_1(react.createElement(App$1, null), document.querySelectorAll('main')[0]);
+reactDom_1(react.createElement(App, null), document.querySelectorAll('main')[0]);
 
 }());
