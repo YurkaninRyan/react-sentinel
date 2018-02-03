@@ -1,0 +1,42 @@
+{
+  "name": "observatory",
+  "description": "Beautiful UI for showing tasks running on the command line.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/dylang/observatory",
+  "author": {
+    "name": "Dylan Greene",
+    "email": "dylang@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dylang/observatory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dylang/observatory/issues"
+  },
+  "license": "MIT",
+  "main": "lib/observatory",
+  "scripts": {
+    "test": "mocha && jshint lib test"
+  },
+  "devDependencies": {
+    "chai": "^3.3.0",
+    "faker": "^3.0.1",
+    "jshint": "^2.8.0",
+    "mocha": "^2.3.3",
+    "q": "^1.4.1"
+  },
+  "keywords": [
+    "task",
+    "watch",
+    "status",
+    "bower",
+    "bower log",
+    "logging"
+  ],
+  "dependencies": {
+    "ansi-escapes": "^1.1.0",
+    "chalk": "^1.1.1",
+    "lodash": "^3.10.1"
+  }
+}

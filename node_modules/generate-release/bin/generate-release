@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+/*
+ * Generate Release
+ * Kevin Gravier
+ * MIT License
+ */
+
+var path = require('path');
+var fs   = require('fs');
+var main  = path.join(path.dirname(fs.realpathSync(__filename)), '../main');
+
+require(main + '/index')(process.argv);

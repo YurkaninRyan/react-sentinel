@@ -1,0 +1,74 @@
+{
+  "name": "react-sentinel",
+  "version": "0.1.1",
+  "description": "React Component that abstracts away requestAnimationFrame and requestIdleCallback.",
+  "main": "dist/react-sentinel.main.js",
+  "browser": "dist/react-sentinel.browser.js",
+  "module": "dist/react-sentinel.module.js",
+  "scripts": {
+    "release": "generate-release",
+    "test": "./node_modules/.bin/jest",
+    "lint": "node ./node_modules/eslint/bin/eslint src",
+    "prepublish": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YurkaninRyan/react-sentinel.git"
+  },
+  "keywords": [
+    "React",
+    "HOC",
+    "Decorator",
+    "Component"
+  ],
+  "author": "Ryan Yurkanin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YurkaninRyan/react-sentinel/issues"
+  },
+  "homepage": "https://github.com/YurkaninRyan/react-sentinel#readme",
+  "devDependencies": {
+    "babel-eslint": "^8.2.1",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-class-property": "^1.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jest": "^21.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.6.1",
+    "generate-release": "^0.14.0",
+    "jest": "^22.1.4",
+    "rollup": "^0.55.3",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^8.3.0",
+    "rollup-plugin-node-resolve": "^3.0.2"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  },
+  "config": {
+    "generateRelease": {
+      "no_confirm": false,
+      "skip_git_pull": false,
+      "skip_git_push": false,
+      "skip_git_flow_finish": false,
+      "release_message": true,
+      "remote": "origin",
+      "pre_commit_commands": [
+        "yarn test",
+        "yarn lint"
+      ],
+      "files_to_version": [
+        "README.md"
+      ]
+    }
+  }
+}
