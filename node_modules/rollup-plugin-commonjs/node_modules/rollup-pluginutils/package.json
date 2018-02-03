@@ -1,0 +1,40 @@
+{
+  "name": "rollup-pluginutils",
+  "description": "Functionality commonly needed by Rollup plugins",
+  "version": "2.0.1",
+  "main": "dist/pluginutils.cjs.js",
+  "module": "dist/pluginutils.es.js",
+  "jsnext:main": "dist/pluginutils.es.js",
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "eslint": "^3.12.2",
+    "mocha": "^3.2.0",
+    "rollup": "^0.40.0",
+    "rollup-plugin-buble": "^0.15.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "build": "rollup -c",
+    "pretest": "npm run build",
+    "prepublish": "npm test"
+  },
+  "dependencies": {
+    "estree-walker": "^0.3.0",
+    "micromatch": "^2.3.11"
+  },
+  "repository": "rollup/rollup-pluginutils",
+  "keywords": [
+    "rollup",
+    "utils"
+  ],
+  "author": "Rich Harris <richard.a.harris@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rollup/rollup-pluginutils/issues"
+  },
+  "homepage": "https://github.com/rollup/rollup-pluginutils#readme"
+}
