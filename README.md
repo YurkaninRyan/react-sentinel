@@ -1,4 +1,4 @@
-# React Sentinel - 0.1.2
+# React Sentinel - 0.1.3
 
 `<Sentinel>` is a component that abstracts away the recursive looping of `requestAnimationFrame` and `requestIdleCallback` to allow developers to efficently observe the dom and make changes to state accordingly.
 
