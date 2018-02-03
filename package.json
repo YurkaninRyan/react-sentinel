@@ -9,6 +9,7 @@
     "release": "generate-release",
     "test": "./node_modules/.bin/jest",
     "lint": "node ./node_modules/eslint/bin/eslint src",
+    "gh-pages": "yarn prepare && gh-pages --dist ./example",
     "prepare": "rollup -c"
   },
   "repository": {
@@ -43,11 +44,15 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.6.1",
     "generate-release": "^0.14.0",
+    "gh-pages": "^1.1.0",
     "jest": "^22.1.4",
+    "node-sass": "^4.7.2",
     "rollup": "^0.55.3",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^8.3.0",
-    "rollup-plugin-node-resolve": "^3.0.2"
+    "rollup-plugin-node-resolve": "^3.0.2",
+    "rollup-plugin-postcss": "^1.2.8",
+    "rollup-plugin-replace": "^2.0.0"
   },
   "dependencies": {
     "prop-types": "^15.6.0",

@@ -10,7 +10,7 @@ import Sentinel from "react-sentinel";
 import DumbCard from "./DumbCard"
 
 class ResponsiveTextCard extends PureComponent {
-  this.getSize = () => {
+  getSize = () => {
     if (this.container.offSetWidth < 450) return { size: "small" }
     if (this.container.offsetWidth < 950) return { size: "medium" }
 

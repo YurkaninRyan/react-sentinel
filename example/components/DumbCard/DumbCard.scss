@@ -1,0 +1,25 @@
+.DumbCard {
+  background: #fdfdfd;
+  border-radius: 2px;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.is-small {
+    font-size: 16px;
+  }
+
+  &.is-medium {
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  &.is-large {
+    font-size: 32px;
+    font-weight: 700;
+  }
+}
