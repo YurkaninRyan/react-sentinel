@@ -9,7 +9,10 @@ export default class DumbCard extends Component {
 
     return (
       <div className={`DumbCard is-${size}`}>
-        {children}
+        <div className="DumbCard__content">
+          <div className="DumbCard__side-banner" />
+          {children}
+        </div>
       </div>
     );
   }

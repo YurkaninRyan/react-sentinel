@@ -3,9 +3,11 @@ import postcss from 'rollup-plugin-postcss';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
+import serve from 'rollup-plugin-serve';
 import pkg from './package.json';
 
 export default [
+  /* Building the actual react-sentinel code */
   {
     input: 'src/index.js',
     output: {
@@ -43,36 +45,8 @@ export default [
       }),
     ],
   },
-  {
-    input: 'src/index.js',
-    external: ['react', 'react-dom', 'prop-types'],
-    output: [
-      { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'es' },
-    ],
-    plugins: [
-      babel({
-        presets: [
-          'react',
-          [
-            'env', {
-              targets: {
-                browsers: ['last 2 versions', 'safari >= 7'],
-              },
-              modules: false,
-            },
-          ],
-        ],
-        plugins: [
-          'external-helpers',
-          'transform-object-rest-spread',
-          'transform-class-properties',
-        ],
-        babelrc: false,
-        exclude: 'node_modules/**',
-      }),
-    ],
-  },
+
+  /* Configuration for building the example */
   {
     input: 'example/index.js',
     output: {
@@ -113,6 +87,10 @@ export default [
       }),
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
+      }),
+      serve({
+        contentBase: 'example',
+        port: 8080,
       }),
     ],
   },

@@ -1,12 +1,13 @@
 {
   "name": "react-sentinel",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "React Component that abstracts away requestAnimationFrame and requestIdleCallback.",
-  "main": "dist/react-sentinel.main.js",
+  "main": "dist/react-sentinel.browser.js",
   "browser": "dist/react-sentinel.browser.js",
-  "module": "dist/react-sentinel.module.js",
+  "module": "dist/react-sentinel.browser.js",
   "scripts": {
     "release": "generate-release",
+    "develop": "rollup -c -w",
     "test": "./node_modules/.bin/jest",
     "lint": "node ./node_modules/eslint/bin/eslint src",
     "gh-pages": "yarn prepare && gh-pages --dist ./example",
@@ -45,6 +46,7 @@
     "eslint-plugin-react": "^7.6.1",
     "generate-release": "^0.14.0",
     "gh-pages": "^1.1.0",
+    "http-server": "^0.11.1",
     "jest": "^22.1.4",
     "node-sass": "^4.7.2",
     "rollup": "^0.55.3",
@@ -52,10 +54,12 @@
     "rollup-plugin-commonjs": "^8.3.0",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-postcss": "^1.2.8",
-    "rollup-plugin-replace": "^2.0.0"
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-serve": "^0.4.2"
   },
   "dependencies": {
     "prop-types": "^15.6.0",
+    "re-resizable": "^4.3.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
   },
@@ -72,12 +76,12 @@
         "yarn lint"
       ],
       "post_complete_commands": [
-        "npm publish",
+        "yarn publish",
         "yarn gh-pages"
       ],
       "files_to_version": [
-        "README.md",
-        "package.json"
+        "./README.md",
+        "./package.json"
       ]
     }
   }

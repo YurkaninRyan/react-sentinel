@@ -1,11 +1,63 @@
 .ResizeableResponsiveCard {
-  min-height: 300px;
-  min-width: 300px;
-  width: 60vw;
-  height: 60vh;
+  margin: 0 16px 16px 0;
 }
 
 .ResizeableResponsiveCard__content {
   display: flex;
   flex-direction: column;
+  white-space: pre-wrap;
+}
+
+.ResizeableResponsiveCard__title {
+  font-size: 1.5em;
+  line-height: 1;
+  margin-bottom: .75em;
+  margin-top: 0;
+  font-weight: 500;
+}
+
+.ResizeableResponsiveCard__subtitle {
+  font-size: 1.2em;
+  line-height: 1;
+  margin-bottom: .5em;
+  margin-top: 0;
+  font-style: italic;
+}
+
+.ResizeableResponsiveCard__tidbit {
+  font-size: 1.1em;
+  line-height: 1.1;
+  margin-top: .5em;
+
+  &.is-bold { font-weight: 600; }
+}
+
+.ResizeableResponsiveCard__resizer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 10%;
+  width: 10%;
+
+  &:before {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    top: 0;
+    left: 0;
+    background-color: white;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #dbd5de;
+  }
 }
