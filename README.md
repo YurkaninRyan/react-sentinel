@@ -1,7 +1,7 @@
-# React Sentinel - 0.1.5
+# React Sentinel - 0.1.4
 
 <a href="./package.json">
-  <img src="https://img.shields.io/npm/v/react-sentinel.svg?maxAge=3600&label=slate&colorB=007ec6">
+  <img src="https://img.shields.io/npm/v/react-sentinel.svg?maxAge=3600&label=react-sentinel&colorB=007ec6">
 </a>
 <a href="https://travis-ci.org/YurkaninRyan/react-sentinel">
   <img src="https://travis-ci.org/YurkaninRyan/react-sentinel.svg?branch=master">
