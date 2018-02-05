@@ -4,6 +4,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
 import serve from 'rollup-plugin-serve';
+import uglify from 'rollup-plugin-uglify';
 import pkg from './package.json';
 
 export default [
@@ -43,6 +44,7 @@ export default [
           'node_modules/react-dom/index.js': ['render'],
         },
       }),
+      (process.env.NODE_ENV === 'production' && uglify()),
     ],
   },
 
@@ -88,10 +90,10 @@ export default [
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
       }),
-      serve({
+      (process.env.NODE_ENV !== 'production' && serve({
         contentBase: 'example',
         port: 8080,
-      }),
+      })),
     ],
   },
 ];
