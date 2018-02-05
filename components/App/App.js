@@ -47,9 +47,9 @@ export default class App extends Component {
       </div>
       <div className="App__content">
         {this.getCards()}
-        <ResizeableResponsiveCard startSize={600} />
-        <ResizeableResponsiveCard startSize={485} />
+        <ResizeableResponsiveCard startSize={425} />
         <ResizeableResponsiveCard startSize={325} />
+        <ResizeableResponsiveCard startSize={240} />
       </div>
     </div>
   )

@@ -7,16 +7,19 @@
 }
 
 .App__header {
-  margin-bottom: 2rem;
+  margin-bottom: 24px;
 }
 
 .App__title {
   margin-top: 0;
+  font-size: 2rem;
+  line-height: 2.2rem;
   font-weight: 600;
 }
 
 .App__tidbit {
   margin-top: 0;
+  font-size: .8rem;
 }
 
 .App__content {
@@ -24,12 +27,8 @@
   flex-flow: wrap;
 }
 
-.App__buttons {
-  margin-top: 8px;
-}
-
 .App__button {
-  font-size: 100%;
+  font-size: .7rem;
   padding: .5em 1em;
   color: #444;
   border: 1px solid #999;
