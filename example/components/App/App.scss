@@ -1,25 +1,56 @@
 .App {
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
-  background-color: #e2e1e0;
+  background-color: #addcca;
   color: #444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  padding: 24px;
 }
 
 .App__header {
-  margin-bottom: auto;
+  margin-bottom: 2rem;
 }
 
 .App__title {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  margin-top: 0;
+  font-weight: 600;
 }
 
 .App__tidbit {
-  font-size: 16px;
-  font-weight: 100;
+  margin-top: 0;
+}
+
+.App__content {
+  display: flex;
+  flex-flow: wrap;
+}
+
+.App__buttons {
+  margin-top: 8px;
+}
+
+.App__button {
+  font-size: 100%;
+  padding: .5em 1em;
+  color: #444;
+  border: 1px solid #999;
+  border: transparent;
+  background-color: #E6E6E6;
+  text-decoration: none;
+  border-radius: 2px;
+  cursor: pointer;
+  margin: 8px 8px 8px 0;
+  font-weight: 500;
+
+  &:active, &:focus {
+    outline: 0;
+  }
+
+  &:disabled {
+    pointer-events: none;
+  }
+
+  &.is-cta {
+    background-color: #F4828C;
+    color: #ffffff;
+  }
 }

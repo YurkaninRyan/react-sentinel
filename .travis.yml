@@ -19,7 +19,7 @@ env:
     - TEST_TYPE=lint
 
 script:
-  # Build the project
-  - yarn prepare
+  # Download packages
+  - yarn
   # Run testing or linting depending on the environment.
   - yarn $TEST_TYPE
