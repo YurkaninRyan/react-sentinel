@@ -38,7 +38,6 @@ object-assign
 @license MIT
 */
 
-/* eslint-disable no-unused-vars */
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -133,15 +132,6 @@ var objectAssign = shouldUseNative() ? Object.assign : function (target, source)
 var emptyObject = {};
 
 var emptyObject_1 = emptyObject;
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
 
 function makeEmptyFunction(arg) {
   return function () {
@@ -281,21 +271,6 @@ var ExecutionEnvironment = {
 
 var ExecutionEnvironment_1 = ExecutionEnvironment;
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- */
-
-
-
-/**
- * Upstream version of event listener. Does not take into account specific
- * nature of platform.
- */
 var EventListener = {
   /**
    * Listen to DOM events during the bubble phase.
@@ -351,27 +326,6 @@ var EventListener = {
 
 var EventListener_1 = EventListener;
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- */
-
-/* eslint-disable fb-www/typeof-undefined */
-
-/**
- * Same as document.activeElement but wraps in a try-catch block. In IE it is
- * not safe to call document.activeElement if there is nothing focused.
- *
- * The activeElement will be null only if the document or document body is not
- * yet defined.
- *
- * @param {?DOMDocument} doc Defaults to current document.
- * @return {?DOMElement}
- */
 function getActiveElement(doc) /*?DOMElement*/{
   doc = doc || (typeof document !== 'undefined' ? document : undefined);
   if (typeof doc === 'undefined') {
@@ -450,19 +404,6 @@ function shallowEqual(objA, objB) {
 
 var shallowEqual_1 = shallowEqual;
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- */
-
-/**
- * @param {*} object The object to check.
- * @return {boolean} Whether or not the object is a DOM node.
- */
 function isNode(object) {
   var doc = object ? object.ownerDocument || object : document;
   var defaultView = doc.defaultView || window;
@@ -471,43 +412,12 @@ function isNode(object) {
 
 var isNode_1 = isNode;
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- */
-
-
-
-/**
- * @param {*} object The object to check.
- * @return {boolean} Whether or not the object is a DOM text node.
- */
 function isTextNode(object) {
   return isNode_1(object) && object.nodeType == 3;
 }
 
 var isTextNode_1 = isTextNode;
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-
-
-/*eslint-disable no-bitwise */
-
-/**
- * Checks if a given DOM node contains or is another DOM node.
- */
 function containsNode(outerNode, innerNode) {
   if (!outerNode || !innerNode) {
     return false;
@@ -534,10 +444,6 @@ var containsNode_1 = containsNode;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- */
-
-/**
- * @param {DOMElement} node input/textarea to focus
  */
 
 function focusNode(node) {
@@ -1759,7 +1665,10 @@ Resizable.defaultProps = {
   lockAspectRatioExtraHeight: 0
 };
 
-var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px 16px 16px 32px;\n  position: relative; }\n  .DumbCard.is-small {\n    font-size: 16px; }\n  .DumbCard.is-medium {\n    font-size: 24px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 32px;\n    padding: 24px 24px 24px 48px; }\n\n.DumbCard__content {\n  display: flex;\n  flex: 1; }\n\n.DumbCard__side-banner {\n  width: 16px;\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  background-color: #2a9d8f; }\n  .is-large .DumbCard__side-banner {\n    width: 24px; }\n";
+
+//# sourceMappingURL=index.js.map
+
+var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px 16px 16px 32px;\n  position: relative; }\n  .DumbCard.is-small {\n    font-size: 20px; }\n  .DumbCard.is-medium {\n    font-size: 28px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 36px;\n    padding: 24px 24px 24px 48px; }\n\n.DumbCard__content {\n  display: flex;\n  flex: 1; }\n\n.DumbCard__side-banner {\n  width: 16px;\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  background-color: #2a9d8f; }\n  .is-large .DumbCard__side-banner {\n    width: 24px; }\n";
 __$$styleInject(css);
 
 var DumbCard = function (_Component) {
@@ -1832,7 +1741,7 @@ Emoji.propTypes = {
   icon: propTypes.string.isRequired
 };
 
-var css$4 = ".ResizeableResponsiveCard {\n  margin: 0 16px 16px 0; }\n\n.ResizeableResponsiveCard__content {\n  display: flex;\n  flex-direction: column;\n  white-space: pre-wrap; }\n\n.ResizeableResponsiveCard__title {\n  font-size: 1.5em;\n  line-height: 1;\n  margin-bottom: .75em;\n  margin-top: 0;\n  font-weight: 500; }\n\n.ResizeableResponsiveCard__subtitle {\n  font-size: 1.2em;\n  line-height: 1;\n  margin-bottom: .5em;\n  margin-top: 0;\n  font-style: italic; }\n\n.ResizeableResponsiveCard__tidbit {\n  font-size: 1.1em;\n  line-height: 1.1;\n  margin-top: .5em; }\n  .ResizeableResponsiveCard__tidbit.is-bold {\n    font-weight: 600; }\n\n.ResizeableResponsiveCard__resizer {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  height: 10%;\n  width: 10%; }\n  .ResizeableResponsiveCard__resizer:before {\n    content: \"\";\n    position: absolute;\n    bottom: 4px;\n    right: 4px;\n    top: 0;\n    left: 0;\n    background-color: white;\n    z-index: 1;\n    pointer-events: none; }\n  .ResizeableResponsiveCard__resizer:after {\n    content: \"\";\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: #dbd5de; }\n";
+var css$4 = ".ResizeableResponsiveCard {\n  margin: 0 16px 16px 0; }\n\n.ResizeableResponsiveCard__content {\n  display: flex;\n  flex-direction: column;\n  white-space: pre-wrap; }\n\n.ResizeableResponsiveCard__title {\n  font-size: 1em;\n  line-height: 1;\n  margin-bottom: .75em;\n  margin-top: 0;\n  font-weight: 500; }\n\n.ResizeableResponsiveCard__subtitle {\n  font-size: .8em;\n  line-height: 1;\n  margin-bottom: .5em;\n  margin-top: 0;\n  font-style: italic; }\n\n.ResizeableResponsiveCard__tidbit {\n  font-size: .6em;\n  line-height: 1.1;\n  margin-top: .5em; }\n  .ResizeableResponsiveCard__tidbit.is-bold {\n    font-weight: 600; }\n\n.ResizeableResponsiveCard__resizer {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  height: 10%;\n  width: 10%; }\n  .ResizeableResponsiveCard__resizer:before {\n    content: \"\";\n    position: absolute;\n    bottom: 4px;\n    right: 4px;\n    top: 0;\n    left: 0;\n    background-color: white;\n    z-index: 1;\n    pointer-events: none; }\n  .ResizeableResponsiveCard__resizer:after {\n    content: \"\";\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: #dbd5de; }\n";
 __$$styleInject(css$4);
 
 var LargeContent = function LargeContent(_ref) {
@@ -1855,7 +1764,7 @@ var LargeContent = function LargeContent(_ref) {
   ), react.createElement(
     'p',
     { className: 'ResizeableResponsiveCard__tidbit is-bold' },
-    'You can drag from the bottom right to make me larger!'
+    'You can drag from the bottom right to make me larger or smaller!'
   )];
 };
 
@@ -1928,14 +1837,14 @@ var ResizeableResponsiveCard = function (_Component) {
 
     return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref4 = ResizeableResponsiveCard.__proto__ || Object.getPrototypeOf(ResizeableResponsiveCard)).call.apply(_ref4, [this].concat(args))), _this), _this.getSize = function () {
       var width = _this.container.offsetWidth;
-      if (width < 485) {
+      if (width < 300) {
         return {
           size: 'small',
           width: width
         };
       }
 
-      if (width < 600) return { size: 'medium', width: width };
+      if (width < 425) return { size: 'medium', width: width };
 
       return { size: 'large', width: width };
     }, _this.permissions = {
@@ -1985,7 +1894,7 @@ var ResizeableResponsiveCard = function (_Component) {
             lockAspectRatio: true,
             defaultSize: { width: startSize, height: startSize },
             enable: this.permissions,
-            minWidth: 300
+            minWidth: 232
           },
           react.createElement(Sentinel, { observe: this.getSize, render: this.renderCard }),
           react.createElement('div', { className: 'ResizeableResponsiveCard__resizer' })
@@ -2002,10 +1911,10 @@ ResizeableResponsiveCard.propTypes = {
 };
 
 ResizeableResponsiveCard.defaultProps = {
-  startSize: 300
+  startSize: 365
 };
 
-var css$6 = ".App {\n  min-height: 100vh;\n  width: 100vw;\n  background-color: #addcca;\n  color: #444;\n  padding: 24px; }\n\n.App__header {\n  margin-bottom: 2rem; }\n\n.App__title {\n  margin-top: 0;\n  font-weight: 600; }\n\n.App__tidbit {\n  margin-top: 0; }\n\n.App__content {\n  display: flex;\n  flex-flow: wrap; }\n\n.App__buttons {\n  margin-top: 8px; }\n\n.App__button {\n  font-size: 100%;\n  padding: .5em 1em;\n  color: #444;\n  border: 1px solid #999;\n  border: transparent;\n  background-color: #E6E6E6;\n  text-decoration: none;\n  border-radius: 2px;\n  cursor: pointer;\n  margin: 8px 8px 8px 0;\n  font-weight: 500; }\n  .App__button:active, .App__button:focus {\n    outline: 0; }\n  .App__button:disabled {\n    pointer-events: none; }\n  .App__button.is-cta {\n    background-color: #F4828C;\n    color: #ffffff; }\n";
+var css$6 = ".App {\n  min-height: 100vh;\n  width: 100vw;\n  background-color: #addcca;\n  color: #444;\n  padding: 24px; }\n\n.App__header {\n  margin-bottom: 24px; }\n\n.App__title {\n  margin-top: 0;\n  font-size: 2rem;\n  line-height: 2.2rem;\n  font-weight: 600; }\n\n.App__tidbit {\n  margin-top: 0;\n  font-size: .8rem; }\n\n.App__content {\n  display: flex;\n  flex-flow: wrap; }\n\n.App__button {\n  font-size: .7rem;\n  padding: .5em 1em;\n  color: #444;\n  border: 1px solid #999;\n  border: transparent;\n  background-color: #E6E6E6;\n  text-decoration: none;\n  border-radius: 2px;\n  cursor: pointer;\n  margin: 8px 8px 8px 0;\n  font-weight: 500; }\n  .App__button:active, .App__button:focus {\n    outline: 0; }\n  .App__button:disabled {\n    pointer-events: none; }\n  .App__button.is-cta {\n    background-color: #F4828C;\n    color: #ffffff; }\n";
 __$$styleInject(css$6);
 
 var css$8 = "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n  box-sizing: border-box; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n";
@@ -2090,9 +1999,9 @@ var App = function (_Component) {
           'div',
           { className: 'App__content' },
           _this.getCards(),
-          react.createElement(ResizeableResponsiveCard, { startSize: 600 }),
-          react.createElement(ResizeableResponsiveCard, { startSize: 485 }),
-          react.createElement(ResizeableResponsiveCard, { startSize: 325 })
+          react.createElement(ResizeableResponsiveCard, { startSize: 425 }),
+          react.createElement(ResizeableResponsiveCard, { startSize: 325 }),
+          react.createElement(ResizeableResponsiveCard, { startSize: 240 })
         )
       );
     };

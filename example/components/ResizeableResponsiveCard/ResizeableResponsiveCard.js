@@ -17,7 +17,7 @@ const LargeContent = ({ width }) => (
       Including Element Queries, and even Animations.
     </p>,
     <p className="ResizeableResponsiveCard__tidbit is-bold">
-      You can drag from the bottom right to make me larger!
+      You can drag from the bottom right to make me larger or smaller!
     </p>,
   ]
 );
@@ -56,14 +56,14 @@ const SmallContent = ({ width }) => (
 export default class ResizeableResponsiveCard extends Component {
   getSize = () => {
     const width = this.container.offsetWidth;
-    if (width < 485) {
+    if (width < 300) {
       return {
         size: 'small',
         width,
       };
     }
 
-    if (width < 600) return { size: 'medium', width };
+    if (width < 425) return { size: 'medium', width };
 
     return { size: 'large', width };
   }
@@ -101,7 +101,7 @@ export default class ResizeableResponsiveCard extends Component {
           lockAspectRatio
           defaultSize={{ width: startSize, height: startSize }}
           enable={this.permissions}
-          minWidth={300}
+          minWidth={232}
         >
           <Sentinel observe={this.getSize} render={this.renderCard} />
           <div className="ResizeableResponsiveCard__resizer" />
@@ -117,5 +117,5 @@ ResizeableResponsiveCard.propTypes = {
 };
 
 ResizeableResponsiveCard.defaultProps = {
-  startSize: 300,
+  startSize: 365,
 };
