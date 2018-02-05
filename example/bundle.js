@@ -38,6 +38,7 @@ object-assign
 @license MIT
 */
 
+/* eslint-disable no-unused-vars */
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -132,6 +133,15 @@ var objectAssign = shouldUseNative() ? Object.assign : function (target, source)
 var emptyObject = {};
 
 var emptyObject_1 = emptyObject;
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
 
 function makeEmptyFunction(arg) {
   return function () {
@@ -271,6 +281,21 @@ var ExecutionEnvironment = {
 
 var ExecutionEnvironment_1 = ExecutionEnvironment;
 
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ */
+
+
+
+/**
+ * Upstream version of event listener. Does not take into account specific
+ * nature of platform.
+ */
 var EventListener = {
   /**
    * Listen to DOM events during the bubble phase.
@@ -326,6 +351,27 @@ var EventListener = {
 
 var EventListener_1 = EventListener;
 
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ */
+
+/* eslint-disable fb-www/typeof-undefined */
+
+/**
+ * Same as document.activeElement but wraps in a try-catch block. In IE it is
+ * not safe to call document.activeElement if there is nothing focused.
+ *
+ * The activeElement will be null only if the document or document body is not
+ * yet defined.
+ *
+ * @param {?DOMDocument} doc Defaults to current document.
+ * @return {?DOMElement}
+ */
 function getActiveElement(doc) /*?DOMElement*/{
   doc = doc || (typeof document !== 'undefined' ? document : undefined);
   if (typeof doc === 'undefined') {
@@ -404,6 +450,19 @@ function shallowEqual(objA, objB) {
 
 var shallowEqual_1 = shallowEqual;
 
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ */
+
+/**
+ * @param {*} object The object to check.
+ * @return {boolean} Whether or not the object is a DOM node.
+ */
 function isNode(object) {
   var doc = object ? object.ownerDocument || object : document;
   var defaultView = doc.defaultView || window;
@@ -412,12 +471,43 @@ function isNode(object) {
 
 var isNode_1 = isNode;
 
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ */
+
+
+
+/**
+ * @param {*} object The object to check.
+ * @return {boolean} Whether or not the object is a DOM text node.
+ */
 function isTextNode(object) {
   return isNode_1(object) && object.nodeType == 3;
 }
 
 var isTextNode_1 = isTextNode;
 
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+
+
+/*eslint-disable no-bitwise */
+
+/**
+ * Checks if a given DOM node contains or is another DOM node.
+ */
 function containsNode(outerNode, innerNode) {
   if (!outerNode || !innerNode) {
     return false;
@@ -444,6 +534,10 @@ var containsNode_1 = containsNode;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ */
+
+/**
+ * @param {DOMElement} node input/textarea to focus
  */
 
 function focusNode(node) {
@@ -1664,9 +1758,6 @@ Resizable.defaultProps = {
   lockAspectRatioExtraWidth: 0,
   lockAspectRatioExtraHeight: 0
 };
-
-
-//# sourceMappingURL=index.js.map
 
 var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px 16px 16px 32px;\n  position: relative; }\n  .DumbCard.is-small {\n    font-size: 16px; }\n  .DumbCard.is-medium {\n    font-size: 24px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 32px;\n    padding: 24px 24px 24px 48px; }\n\n.DumbCard__content {\n  display: flex;\n  flex: 1; }\n\n.DumbCard__side-banner {\n  width: 16px;\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  background-color: #2a9d8f; }\n  .is-large .DumbCard__side-banner {\n    width: 24px; }\n";
 __$$styleInject(css);
