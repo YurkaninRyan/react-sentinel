@@ -1,5 +1,16 @@
 # React Sentinel - 0.1.4
 
+<a href="./package.json">
+  <img src="https://img.shields.io/npm/v/react-sentinel.svg?maxAge=3600&label=slate&colorB=007ec6">
+</a>
+<a href="https://travis-ci.org/YurkaninRyan/react-sentinel">
+  <img src="https://travis-ci.org/YurkaninRyan/react-sentinel.svg?branch=master">
+</a>
+<a href="./License.md">
+  <img src="https://img.shields.io/npm/l/slate.svg?maxAge=3600">
+</a>
+<br/>
+
 `<Sentinel>` is a component that abstracts away the recursive looping of `requestAnimationFrame` and `requestIdleCallback` to allow developers to efficently observe the dom and make changes to state accordingly.
 
 Take for example the common usecase of element queries.  In CSS Media Queries are only so useful because they monitor only the size of the page, but what if you wanted to monitor only an element?
