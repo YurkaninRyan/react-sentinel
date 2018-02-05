@@ -46,7 +46,7 @@ In this simple example, you can design a dumb card that takes a size property, a
 # Props
 `render` - A function that returns JSX.  It get's passed in Sentinel's state, which is just whatever object you return in the `observe` function.
 
-`observe` - You're chance to update Sentinel's state.  Attempts to run once every 15ms.  Returning a shallowly equal object doesn't cause a re-render.
+`observe` - Your chance to update Sentinel's state.  Attempts to run once every 15ms.  Returning a shallowly equal object doesn't cause a re-render.
 
 `lowPriority` - Defaults to false.  If set to `true` it switches from using `requestAnimationFrame` to using `requestIdleCallback`.  For browsers that don't support `requestIdleCallback` this is basically a no-op.
 
