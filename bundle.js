@@ -1075,7 +1075,691 @@ Sentinel.defaultProps = {
   lowPriority: false
 };
 
-var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  width: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px; }\n  .DumbCard.is-small {\n    font-size: 16px; }\n  .DumbCard.is-medium {\n    font-size: 24px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 32px;\n    font-weight: 700;\n    padding: 24px; }\n";
+var classCallCheck$1 = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass$1 = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+
+
+
+
+
+
+var _extends$1 = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+
+
+var inherits$1 = function (subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+};
+
+
+
+
+
+
+
+
+
+
+
+var possibleConstructorReturn$1 = function (self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+};
+
+var styles = {
+  base: {
+    position: 'absolute',
+    userSelect: 'none',
+    MsUserSelect: 'none'
+  },
+  top: {
+    width: '100%',
+    height: '10px',
+    top: '-5px',
+    left: '0px',
+    cursor: 'row-resize'
+  },
+  right: {
+    width: '10px',
+    height: '100%',
+    top: '0px',
+    right: '-5px',
+    cursor: 'col-resize'
+  },
+  bottom: {
+    width: '100%',
+    height: '10px',
+    bottom: '-5px',
+    left: '0px',
+    cursor: 'row-resize'
+  },
+  left: {
+    width: '10px',
+    height: '100%',
+    top: '0px',
+    left: '-5px',
+    cursor: 'col-resize'
+  },
+  topRight: {
+    width: '20px',
+    height: '20px',
+    position: 'absolute',
+    right: '-10px',
+    top: '-10px',
+    cursor: 'ne-resize'
+  },
+  bottomRight: {
+    width: '20px',
+    height: '20px',
+    position: 'absolute',
+    right: '-10px',
+    bottom: '-10px',
+    cursor: 'se-resize'
+  },
+  bottomLeft: {
+    width: '20px',
+    height: '20px',
+    position: 'absolute',
+    left: '-10px',
+    bottom: '-10px',
+    cursor: 'sw-resize'
+  },
+  topLeft: {
+    width: '20px',
+    height: '20px',
+    position: 'absolute',
+    left: '-10px',
+    top: '-10px',
+    cursor: 'nw-resize'
+  }
+};
+
+var Resizer = (function (props) {
+  return react_5(
+    'div',
+    {
+      className: props.className,
+      style: _extends$1({}, styles.base, styles[props.direction], props.replaceStyles || {}),
+      onMouseDown: function onMouseDown(e) {
+        props.onResizeStart(e, props.direction);
+      },
+      onTouchStart: function onTouchStart(e) {
+        props.onResizeStart(e, props.direction);
+      }
+    },
+    props.children
+  );
+});
+
+var userSelectNone = {
+  userSelect: 'none',
+  MozUserSelect: 'none',
+  WebkitUserSelect: 'none',
+  MsUserSelect: 'none'
+};
+
+var userSelectAuto = {
+  userSelect: 'auto',
+  MozUserSelect: 'auto',
+  WebkitUserSelect: 'auto',
+  MsUserSelect: 'auto'
+};
+
+var clamp = function clamp(n, min, max) {
+  return Math.max(Math.min(n, max), min);
+};
+var snap = function snap(n, size) {
+  return Math.round(n / size) * size;
+};
+
+var endsWith = function endsWith(str, searchStr) {
+  return str.substr(str.length - searchStr.length, searchStr.length) === searchStr;
+};
+
+var getStringSize = function getStringSize(n) {
+  if (endsWith(n.toString(), 'px')) return n.toString();
+  if (endsWith(n.toString(), '%')) return n.toString();
+  return n + 'px';
+};
+
+var baseSizeId = 0;
+
+var definedProps = ['style', 'className', 'grid', 'bounds', 'size', 'defaultSize', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight', 'lockAspectRatio', 'lockAspectRatioExtraWidth', 'lockAspectRatioExtraHeight', 'enable', 'handleStyles', 'handleClasses', 'handleWrapperStyle', 'handleWrapperClass', 'children', 'onResizeStart', 'onResize', 'onResizeStop', 'handleComponent'];
+
+var Resizable = function (_React$Component) {
+  inherits$1(Resizable, _React$Component);
+
+  function Resizable(props) {
+    classCallCheck$1(this, Resizable);
+
+    var _this = possibleConstructorReturn$1(this, (Resizable.__proto__ || Object.getPrototypeOf(Resizable)).call(this, props));
+
+    _this.state = {
+      isResizing: false,
+      resizeCursor: 'auto',
+      width: typeof (_this.propsSize && _this.propsSize.width) === 'undefined' ? 'auto' : _this.propsSize && _this.propsSize.width,
+      height: typeof (_this.propsSize && _this.propsSize.height) === 'undefined' ? 'auto' : _this.propsSize && _this.propsSize.height,
+      direction: 'right',
+      original: {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      }
+    };
+
+    _this.updateExtendsProps(props);
+    _this.onResizeStart = _this.onResizeStart.bind(_this);
+    _this.onMouseMove = _this.onMouseMove.bind(_this);
+    _this.onMouseUp = _this.onMouseUp.bind(_this);
+    _this.baseSizeId = '__resizable' + baseSizeId;
+    baseSizeId += 1;
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('mouseup', _this.onMouseUp);
+      window.addEventListener('mousemove', _this.onMouseMove);
+      window.addEventListener('touchmove', _this.onMouseMove);
+      window.addEventListener('touchend', _this.onMouseUp);
+    }
+    return _this;
+  }
+
+  createClass$1(Resizable, [{
+    key: 'updateExtendsProps',
+    value: function updateExtendsProps(props) {
+      this.extendsProps = Object.keys(props).reduce(function (acc, key) {
+        if (definedProps.indexOf(key) !== -1) return acc;
+        acc[key] = props[key];
+        return acc;
+      }, {});
+    }
+  }, {
+    key: 'getParentSize',
+    value: function getParentSize() {
+      var base = document.getElementById(this.baseSizeId);
+      if (!base) return { width: window.innerWidth, height: window.innerHeight };
+      return {
+        width: base.offsetWidth,
+        height: base.offsetHeight
+      };
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var size = this.size;
+      this.setState({
+        width: this.state.width || size.width,
+        height: this.state.height || size.height
+      });
+      var element = document.createElement('div');
+      element.id = this.baseSizeId;
+      element.style.width = '100%';
+      element.style.height = '100%';
+      element.style.position = 'relative';
+      element.style.transform = 'scale(0, 0)';
+      element.style.left = '-2147483647px';
+      element.style.flex = '0';
+      var parent = this.parentNode;
+      if (!(parent instanceof HTMLElement)) return;
+      parent.appendChild(element);
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(next) {
+      this.updateExtendsProps(next);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('mouseup', this.onMouseUp);
+        window.removeEventListener('mousemove', this.onMouseMove);
+        window.removeEventListener('touchmove', this.onMouseMove);
+        window.removeEventListener('touchend', this.onMouseUp);
+
+        var parent = this.parentNode;
+        var base = document.getElementById(this.baseSizeId);
+        if (!base) return;
+        if (!(parent instanceof HTMLElement) || !(base instanceof Node)) return;
+        parent.removeChild(base);
+      }
+    }
+  }, {
+    key: 'calculateNewSize',
+    value: function calculateNewSize(newSize, kind) {
+      var propsSize = this.propsSize && this.propsSize[kind];
+      return this.state[kind] === 'auto' && this.state.original[kind] === newSize && (typeof propsSize === 'undefined' || propsSize === 'auto') ? 'auto' : newSize;
+    }
+  }, {
+    key: 'onResizeStart',
+    value: function onResizeStart(event, direction) {
+      var clientX = 0;
+      var clientY = 0;
+      if (event.nativeEvent instanceof MouseEvent) {
+        clientX = event.nativeEvent.clientX;
+        clientY = event.nativeEvent.clientY;
+
+        // When user click with right button the resize is stuck in resizing mode
+        // until users clicks again, dont continue if right click is used.
+        if (event.nativeEvent.which === 3) {
+          return;
+        }
+      } else if (event.nativeEvent instanceof TouchEvent) {
+        clientX = event.nativeEvent.touches[0].clientX;
+        clientY = event.nativeEvent.touches[0].clientY;
+      }
+      if (this.props.onResizeStart) {
+        this.props.onResizeStart(event, direction, this.resizable);
+      }
+
+      // Fix #168
+      if (this.props.size) {
+        if (typeof this.props.size.height !== 'undefined' && this.props.size.height !== this.state.height) {
+          this.setState({ height: this.props.size.height });
+        }
+        if (typeof this.props.size.width !== 'undefined' && this.props.size.width !== this.state.width) {
+          this.setState({ width: this.props.size.width });
+        }
+      }
+
+      this.setState({
+        original: {
+          x: clientX,
+          y: clientY,
+          width: this.size.width,
+          height: this.size.height
+        },
+        isResizing: true,
+        resizeCursor: window.getComputedStyle(event.target).cursor,
+        direction: direction
+      });
+    }
+  }, {
+    key: 'onMouseMove',
+    value: function onMouseMove(event) {
+      if (!this.state.isResizing) return;
+      var clientX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
+      var clientY = event instanceof MouseEvent ? event.clientY : event.touches[0].clientY;
+      var _state = this.state,
+          direction = _state.direction,
+          original = _state.original,
+          width = _state.width,
+          height = _state.height;
+      var _props = this.props,
+          lockAspectRatio = _props.lockAspectRatio,
+          lockAspectRatioExtraHeight = _props.lockAspectRatioExtraHeight,
+          lockAspectRatioExtraWidth = _props.lockAspectRatioExtraWidth;
+      var _props2 = this.props,
+          maxWidth = _props2.maxWidth,
+          maxHeight = _props2.maxHeight,
+          minWidth = _props2.minWidth,
+          minHeight = _props2.minHeight;
+
+      // TODO: refactor
+
+      var parentSize = this.getParentSize();
+      if (maxWidth && typeof maxWidth === 'string' && endsWith(maxWidth, '%')) {
+        var _ratio = Number(maxWidth.replace('%', '')) / 100;
+        maxWidth = parentSize.width * _ratio;
+      }
+      if (maxHeight && typeof maxHeight === 'string' && endsWith(maxHeight, '%')) {
+        var _ratio2 = Number(maxHeight.replace('%', '')) / 100;
+        maxHeight = parentSize.height * _ratio2;
+      }
+      if (minWidth && typeof minWidth === 'string' && endsWith(minWidth, '%')) {
+        var _ratio3 = Number(minWidth.replace('%', '')) / 100;
+        minWidth = parentSize.width * _ratio3;
+      }
+      if (minHeight && typeof minHeight === 'string' && endsWith(minHeight, '%')) {
+        var _ratio4 = Number(minHeight.replace('%', '')) / 100;
+        minHeight = parentSize.height * _ratio4;
+      }
+      maxWidth = typeof maxWidth === 'undefined' ? undefined : Number(maxWidth);
+      maxHeight = typeof maxHeight === 'undefined' ? undefined : Number(maxHeight);
+      minWidth = typeof minWidth === 'undefined' ? undefined : Number(minWidth);
+      minHeight = typeof minHeight === 'undefined' ? undefined : Number(minHeight);
+
+      var ratio = typeof lockAspectRatio === 'number' ? lockAspectRatio : original.width / original.height;
+      var newWidth = original.width;
+      var newHeight = original.height;
+      if (/right/i.test(direction)) {
+        newWidth = original.width + (clientX - original.x);
+        if (lockAspectRatio) newHeight = (newWidth - lockAspectRatioExtraWidth) / ratio + lockAspectRatioExtraHeight;
+      }
+      if (/left/i.test(direction)) {
+        newWidth = original.width - (clientX - original.x);
+        if (lockAspectRatio) newHeight = (newWidth - lockAspectRatioExtraWidth) / ratio + lockAspectRatioExtraHeight;
+      }
+      if (/bottom/i.test(direction)) {
+        newHeight = original.height + (clientY - original.y);
+        if (lockAspectRatio) newWidth = (newHeight - lockAspectRatioExtraHeight) * ratio + lockAspectRatioExtraWidth;
+      }
+      if (/top/i.test(direction)) {
+        newHeight = original.height - (clientY - original.y);
+        if (lockAspectRatio) newWidth = (newHeight - lockAspectRatioExtraHeight) * ratio + lockAspectRatioExtraWidth;
+      }
+
+      if (this.props.bounds === 'parent') {
+        var parent = this.parentNode;
+        if (parent instanceof HTMLElement) {
+          var parentRect = parent.getBoundingClientRect();
+          var parentLeft = parentRect.left;
+          var parentTop = parentRect.top;
+
+          var _resizable$getBoundin = this.resizable.getBoundingClientRect(),
+              _left = _resizable$getBoundin.left,
+              _top = _resizable$getBoundin.top;
+
+          var boundWidth = parent.offsetWidth + (parentLeft - _left);
+          var boundHeight = parent.offsetHeight + (parentTop - _top);
+          maxWidth = maxWidth && maxWidth < boundWidth ? maxWidth : boundWidth;
+          maxHeight = maxHeight && maxHeight < boundHeight ? maxHeight : boundHeight;
+        }
+      } else if (this.props.bounds === 'window') {
+        if (typeof window !== 'undefined') {
+          var _resizable$getBoundin2 = this.resizable.getBoundingClientRect(),
+              _left2 = _resizable$getBoundin2.left,
+              _top2 = _resizable$getBoundin2.top;
+
+          var _boundWidth = window.innerWidth - _left2;
+          var _boundHeight = window.innerHeight - _top2;
+          maxWidth = maxWidth && maxWidth < _boundWidth ? maxWidth : _boundWidth;
+          maxHeight = maxHeight && maxHeight < _boundHeight ? maxHeight : _boundHeight;
+        }
+      } else if (this.props.bounds instanceof HTMLElement) {
+        var targetRect = this.props.bounds.getBoundingClientRect();
+        var targetLeft = targetRect.left;
+        var targetTop = targetRect.top;
+
+        var _resizable$getBoundin3 = this.resizable.getBoundingClientRect(),
+            _left3 = _resizable$getBoundin3.left,
+            _top3 = _resizable$getBoundin3.top;
+
+        if (!(this.props.bounds instanceof HTMLElement)) return;
+        var _boundWidth2 = this.props.bounds.offsetWidth + (targetLeft - _left3);
+        var _boundHeight2 = this.props.bounds.offsetHeight + (targetTop - _top3);
+        maxWidth = maxWidth && maxWidth < _boundWidth2 ? maxWidth : _boundWidth2;
+        maxHeight = maxHeight && maxHeight < _boundHeight2 ? maxHeight : _boundHeight2;
+      }
+
+      var computedMinWidth = typeof minWidth === 'undefined' ? 10 : minWidth;
+      var computedMaxWidth = typeof maxWidth === 'undefined' || maxWidth < 0 ? newWidth : maxWidth;
+      var computedMinHeight = typeof minHeight === 'undefined' ? 10 : minHeight;
+      var computedMaxHeight = typeof maxHeight === 'undefined' || maxHeight < 0 ? newHeight : maxHeight;
+
+      if (lockAspectRatio) {
+        var extraMinWidth = (computedMinHeight - lockAspectRatioExtraHeight) * ratio + lockAspectRatioExtraWidth;
+        var extraMaxWidth = (computedMaxHeight - lockAspectRatioExtraHeight) * ratio + lockAspectRatioExtraWidth;
+        var extraMinHeight = (computedMinWidth - lockAspectRatioExtraWidth) / ratio + lockAspectRatioExtraHeight;
+        var extraMaxHeight = (computedMaxWidth - lockAspectRatioExtraWidth) / ratio + lockAspectRatioExtraHeight;
+        var lockedMinWidth = Math.max(computedMinWidth, extraMinWidth);
+        var lockedMaxWidth = Math.min(computedMaxWidth, extraMaxWidth);
+        var lockedMinHeight = Math.max(computedMinHeight, extraMinHeight);
+        var lockedMaxHeight = Math.min(computedMaxHeight, extraMaxHeight);
+        newWidth = clamp(newWidth, lockedMinWidth, lockedMaxWidth);
+        newHeight = clamp(newHeight, lockedMinHeight, lockedMaxHeight);
+      } else {
+        newWidth = clamp(newWidth, computedMinWidth, computedMaxWidth);
+        newHeight = clamp(newHeight, computedMinHeight, computedMaxHeight);
+      }
+      if (this.props.grid) {
+        newWidth = snap(newWidth, this.props.grid[0]);
+      }
+      if (this.props.grid) {
+        newHeight = snap(newHeight, this.props.grid[1]);
+      }
+
+      var delta = {
+        width: newWidth - original.width,
+        height: newHeight - original.height
+      };
+
+      if (width && typeof width === 'string' && endsWith(width, '%')) {
+        var percent = newWidth / parentSize.width * 100;
+        newWidth = percent + '%';
+      }
+
+      if (height && typeof height === 'string' && endsWith(height, '%')) {
+        var _percent = newHeight / parentSize.height * 100;
+        newHeight = _percent + '%';
+      }
+
+      this.setState({
+        width: this.calculateNewSize(newWidth, 'width'),
+        height: this.calculateNewSize(newHeight, 'height')
+      });
+
+      if (this.props.onResize) {
+        this.props.onResize(event, direction, this.resizable, delta);
+      }
+    }
+  }, {
+    key: 'onMouseUp',
+    value: function onMouseUp(event) {
+      var _state2 = this.state,
+          isResizing = _state2.isResizing,
+          direction = _state2.direction,
+          original = _state2.original;
+
+      if (!isResizing) return;
+      var delta = {
+        width: this.size.width - original.width,
+        height: this.size.height - original.height
+      };
+      if (this.props.onResizeStop) {
+        this.props.onResizeStop(event, direction, this.resizable, delta);
+      }
+      if (this.props.size) {
+        this.setState(this.props.size);
+      }
+      this.setState({ isResizing: false, resizeCursor: 'auto' });
+    }
+  }, {
+    key: 'updateSize',
+    value: function updateSize(size) {
+      this.setState({ width: size.width, height: size.height });
+    }
+  }, {
+    key: 'renderResizer',
+    value: function renderResizer() {
+      var _this2 = this;
+
+      var _props3 = this.props,
+          enable = _props3.enable,
+          handleStyles = _props3.handleStyles,
+          handleClasses = _props3.handleClasses,
+          handleWrapperStyle = _props3.handleWrapperStyle,
+          handleWrapperClass = _props3.handleWrapperClass,
+          handleComponent = _props3.handleComponent;
+
+      if (!enable) return null;
+      var resizers = Object.keys(enable).map(function (dir) {
+        if (enable[dir] !== false) {
+          return react_5(
+            Resizer,
+            {
+              key: dir,
+              direction: dir,
+              onResizeStart: _this2.onResizeStart,
+              replaceStyles: handleStyles && handleStyles[dir],
+              className: handleClasses && handleClasses[dir]
+            },
+            handleComponent && handleComponent[dir] ? react_5(handleComponent[dir]) : null
+          );
+        }
+        return null;
+      });
+
+      // #93 Wrap the resize box in span (will not break 100% width/height)
+      return react_5(
+        'span',
+        {
+          className: handleWrapperClass,
+          style: handleWrapperStyle
+        },
+        resizers
+      );
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      var userSelect = this.state.isResizing ? userSelectNone : userSelectAuto;
+      return react_5(
+        'div',
+        _extends$1({
+          ref: function ref(c) {
+            _this3.resizable = c;
+          },
+          style: _extends$1({
+            position: 'relative'
+          }, userSelect, this.props.style, this.sizeStyle, {
+            maxWidth: this.props.maxWidth,
+            maxHeight: this.props.maxHeight,
+            minWidth: this.props.minWidth,
+            minHeight: this.props.minHeight,
+            boxSizing: 'border-box'
+          }),
+          className: this.props.className
+        }, this.extendsProps),
+        this.state.isResizing && react_5('div', {
+          style: {
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'rgba(0,0,0,0)',
+            cursor: '' + (this.state.resizeCursor || 'auto'),
+            opacity: '0',
+            position: 'fixed',
+            zIndex: '9999',
+            top: '0',
+            left: '0',
+            bottom: '0',
+            right: '0'
+          }
+        }),
+        this.props.children,
+        this.renderResizer()
+      );
+    }
+  }, {
+    key: 'parentNode',
+    get: function get$$1() {
+      return this.resizable.parentNode;
+    }
+  }, {
+    key: 'propsSize',
+    get: function get$$1() {
+      return this.props.size || this.props.defaultSize;
+    }
+  }, {
+    key: 'size',
+    get: function get$$1() {
+      var width = 0;
+      var height = 0;
+      if (typeof window !== 'undefined') {
+        width = this.resizable.offsetWidth;
+        height = this.resizable.offsetHeight;
+      }
+      return { width: width, height: height };
+    }
+  }, {
+    key: 'sizeStyle',
+    get: function get$$1() {
+      var _this4 = this;
+
+      var size = this.props.size;
+
+      var getSize = function getSize(key) {
+        if (typeof _this4.state[key] === 'undefined' || _this4.state[key] === 'auto') return 'auto';
+        if (_this4.propsSize && _this4.propsSize[key] && endsWith(_this4.propsSize[key].toString(), '%')) {
+          if (endsWith(_this4.state[key].toString(), '%')) return _this4.state[key].toString();
+          var parentSize = _this4.getParentSize();
+          var value = Number(_this4.state[key].toString().replace('px', ''));
+          var percent = value / parentSize[key] * 100;
+          return percent + '%';
+        }
+        return getStringSize(_this4.state[key]);
+      };
+      var width = size && size.width && !this.state.isResizing ? getStringSize(size.width) : getSize('width');
+      var height = size && size.height && !this.state.isResizing ? getStringSize(size.height) : getSize('height');
+      return { width: width, height: height };
+    }
+  }]);
+  return Resizable;
+}(react_2);
+
+Resizable.defaultProps = {
+  onResizeStart: function onResizeStart() {},
+  onResize: function onResize() {},
+  onResizeStop: function onResizeStop() {},
+  enable: {
+    top: true,
+    right: true,
+    bottom: true,
+    left: true,
+    topRight: true,
+    bottomRight: true,
+    bottomLeft: true,
+    topLeft: true
+  },
+  style: {},
+  grid: [1, 1],
+  lockAspectRatio: false,
+  lockAspectRatioExtraWidth: 0,
+  lockAspectRatioExtraHeight: 0
+};
+
+var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px 16px 16px 32px;\n  position: relative; }\n  .DumbCard.is-small {\n    font-size: 16px; }\n  .DumbCard.is-medium {\n    font-size: 24px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 32px;\n    padding: 24px 24px 24px 48px; }\n\n.DumbCard__content {\n  display: flex;\n  flex: 1; }\n\n.DumbCard__side-banner {\n  width: 16px;\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  background-color: #2a9d8f; }\n  .is-large .DumbCard__side-banner {\n    width: 24px; }\n";
 __$$styleInject(css);
 
 var DumbCard = function (_Component) {
@@ -1097,7 +1781,12 @@ var DumbCard = function (_Component) {
       return react.createElement(
         'div',
         { className: 'DumbCard is-' + size },
-        children
+        react.createElement(
+          'div',
+          { className: 'DumbCard__content' },
+          react.createElement('div', { className: 'DumbCard__side-banner' }),
+          children
+        )
       );
     }
   }]);
@@ -1113,14 +1802,121 @@ DumbCard.defaultProps = {
   size: 'large'
 };
 
-var css$2 = ".ResizeableResponsiveCard {\n  min-height: 300px;\n  min-width: 300px;\n  width: 60vw;\n  height: 60vh; }\n\n.ResizeableResponsiveCard__content {\n  display: flex;\n  flex-direction: column; }\n";
+var css$2 = ".Emoji {\n  transform: translateY(10%);\n  display: inline-block; }\n";
 __$$styleInject(css$2);
+
+var Emoji = function (_PureComponent) {
+  inherits(Emoji, _PureComponent);
+
+  function Emoji() {
+    classCallCheck(this, Emoji);
+    return possibleConstructorReturn(this, (Emoji.__proto__ || Object.getPrototypeOf(Emoji)).apply(this, arguments));
+  }
+
+  createClass(Emoji, [{
+    key: 'render',
+    value: function render() {
+      var icon = this.props.icon;
+
+      return react.createElement(
+        'span',
+        { className: 'Emoji' },
+        icon
+      );
+    }
+  }]);
+  return Emoji;
+}(react_3);
+
+Emoji.propTypes = {
+  icon: propTypes.string.isRequired
+};
+
+var css$4 = ".ResizeableResponsiveCard {\n  margin: 0 16px 16px 0; }\n\n.ResizeableResponsiveCard__content {\n  display: flex;\n  flex-direction: column;\n  white-space: pre-wrap; }\n\n.ResizeableResponsiveCard__title {\n  font-size: 1.5em;\n  line-height: 1;\n  margin-bottom: .75em;\n  margin-top: 0;\n  font-weight: 500; }\n\n.ResizeableResponsiveCard__subtitle {\n  font-size: 1.2em;\n  line-height: 1;\n  margin-bottom: .5em;\n  margin-top: 0;\n  font-style: italic; }\n\n.ResizeableResponsiveCard__tidbit {\n  font-size: 1.1em;\n  line-height: 1.1;\n  margin-top: .5em; }\n  .ResizeableResponsiveCard__tidbit.is-bold {\n    font-weight: 600; }\n\n.ResizeableResponsiveCard__resizer {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  height: 10%;\n  width: 10%; }\n  .ResizeableResponsiveCard__resizer:before {\n    content: \"\";\n    position: absolute;\n    bottom: 4px;\n    right: 4px;\n    top: 0;\n    left: 0;\n    background-color: white;\n    z-index: 1;\n    pointer-events: none; }\n  .ResizeableResponsiveCard__resizer:after {\n    content: \"\";\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: #dbd5de; }\n";
+__$$styleInject(css$4);
+
+var LargeContent = function LargeContent(_ref) {
+  var width = _ref.width;
+  return [react.createElement(
+    'h1',
+    { className: 'ResizeableResponsiveCard__title' },
+    'Looping and setting props made easy ',
+    react.createElement(Emoji, { icon: '\uD83C\uDF89' })
+  ), react.createElement(
+    'h2',
+    { className: 'ResizeableResponsiveCard__subtitle' },
+    'Current Width: ',
+    width,
+    'px'
+  ), react.createElement(
+    'p',
+    { className: 'ResizeableResponsiveCard__tidbit' },
+    'You can use Sentinel for basically any usecase you would want to use requestAnimationFrame for. Including Element Queries, and even Animations.'
+  ), react.createElement(
+    'p',
+    { className: 'ResizeableResponsiveCard__tidbit is-bold' },
+    'You can drag from the bottom right to make me larger!'
+  )];
+};
+
+var MediumContent = function MediumContent(_ref2) {
+  var width = _ref2.width;
+  return [react.createElement(
+    'h1',
+    { className: 'ResizeableResponsiveCard__title' },
+    'Efficient out of the box ',
+    react.createElement(Emoji, { icon: '\uD83C\uDF89' })
+  ), react.createElement(
+    'h2',
+    { className: 'ResizeableResponsiveCard__subtitle' },
+    'Current Width: ',
+    width,
+    'px'
+  ), react.createElement(
+    'p',
+    { className: 'ResizeableResponsiveCard__tidbit' },
+    'Sentinel will automatically shallow compare what you return, and will only update the wrapped component if something actually changes.'
+  ), react.createElement(
+    'p',
+    { className: 'ResizeableResponsiveCard__tidbit' },
+    'if requestAnimationFrame is too heavy for you, setting the ',
+    react.createElement(
+      'code',
+      null,
+      'lowPriority'
+    ),
+    ' prop will loop using requestIdleCallback!'
+  )];
+};
+
+var SmallContent = function SmallContent(_ref3) {
+  var width = _ref3.width;
+  return [react.createElement(
+    'h1',
+    { className: 'ResizeableResponsiveCard__title' },
+    'Thats it, just trying to keep it simple here.'
+  ), react.createElement(
+    'h2',
+    { className: 'ResizeableResponsiveCard__subtitle' },
+    'Current Width: ',
+    width,
+    'px'
+  ), react.createElement(
+    'p',
+    { className: 'ResizeableResponsiveCard__tidbit is-bold' },
+    'There are definitely other ways of doing Element Queries and Animations.'
+  ), react.createElement(
+    'p',
+    { className: 'ResizeableResponsiveCard__tidbit' },
+    'I often found myself writing requestAnimationFrame loops and hated it, so I decided to make it easier for myself and share it with all of you'
+  )];
+};
 
 var ResizeableResponsiveCard = function (_Component) {
   inherits(ResizeableResponsiveCard, _Component);
 
   function ResizeableResponsiveCard() {
-    var _ref;
+    var _ref4;
 
     var _temp, _this, _ret;
 
@@ -1130,15 +1926,30 @@ var ResizeableResponsiveCard = function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = ResizeableResponsiveCard.__proto__ || Object.getPrototypeOf(ResizeableResponsiveCard)).call.apply(_ref, [this].concat(args))), _this), _this.getSize = function () {
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref4 = ResizeableResponsiveCard.__proto__ || Object.getPrototypeOf(ResizeableResponsiveCard)).call.apply(_ref4, [this].concat(args))), _this), _this.getSize = function () {
       var width = _this.container.offsetWidth;
-      if (width < 450) return { size: 'small', text: 'At ' + width + 'px or less I get small!' };
-      if (width < 650) return { size: 'medium', text: 'At ' + width + 'px or less i\'m average!' };
+      if (width < 485) {
+        return {
+          size: 'small',
+          width: width
+        };
+      }
 
-      return { size: 'large', text: 'At ' + width + 'px or less I get big!' };
-    }, _this.renderCard = function (_ref2) {
-      var size = _ref2.size,
-          text = _ref2.text;
+      if (width < 600) return { size: 'medium', width: width };
+
+      return { size: 'large', width: width };
+    }, _this.permissions = {
+      top: false,
+      right: false,
+      bottom: false,
+      left: false,
+      topRight: false,
+      bottomRight: true,
+      bottomLeft: false,
+      topLeft: false
+    }, _this.renderCard = function (_ref5) {
+      var size = _ref5.size,
+          width = _ref5.width;
       var children = _this.props.children;
 
       return react.createElement(
@@ -1148,7 +1959,9 @@ var ResizeableResponsiveCard = function (_Component) {
           'div',
           { className: 'ResizeableResponsiveCard__content' },
           children,
-          text
+          size === 'small' && react.createElement(SmallContent, { width: width }),
+          size === 'medium' && react.createElement(MediumContent, { width: width }),
+          size === 'large' && react.createElement(LargeContent, { width: width })
         )
       );
     }, _temp), possibleConstructorReturn(_this, _ret);
@@ -1159,12 +1972,24 @@ var ResizeableResponsiveCard = function (_Component) {
     value: function render() {
       var _this2 = this;
 
+      var startSize = this.props.startSize;
+
       return react.createElement(
         'div',
         { className: 'ResizeableResponsiveCard', ref: function ref(el) {
             return _this2.container = el;
           } },
-        react.createElement(Sentinel, { observe: this.getSize, render: this.renderCard })
+        react.createElement(
+          Resizable,
+          {
+            lockAspectRatio: true,
+            defaultSize: { width: startSize, height: startSize },
+            enable: this.permissions,
+            minWidth: 300
+          },
+          react.createElement(Sentinel, { observe: this.getSize, render: this.renderCard }),
+          react.createElement('div', { className: 'ResizeableResponsiveCard__resizer' })
+        )
       );
     }
   }]);
@@ -1172,63 +1997,108 @@ var ResizeableResponsiveCard = function (_Component) {
 }(react_2);
 
 ResizeableResponsiveCard.propTypes = {
-  children: propTypes.element.isRequired
+  children: propTypes.element.isRequired,
+  startSize: propTypes.number
 };
 
-var css$4 = ".App {\n  height: 100vh;\n  width: 100vw;\n  background-color: #e2e1e0;\n  color: #444;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-direction: column; }\n\n.App__header {\n  margin-bottom: auto; }\n\n.App__title {\n  font-size: 32px;\n  font-weight: 700;\n  margin-bottom: 8px; }\n\n.App__tidbit {\n  font-size: 16px;\n  font-weight: 100; }\n";
-__$$styleInject(css$4);
+ResizeableResponsiveCard.defaultProps = {
+  startSize: 300
+};
 
-var css$6 = "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n";
+var css$6 = ".App {\n  min-height: 100vh;\n  width: 100vw;\n  background-color: #addcca;\n  color: #444;\n  padding: 24px; }\n\n.App__header {\n  margin-bottom: 2rem; }\n\n.App__title {\n  margin-top: 0;\n  font-weight: 600; }\n\n.App__tidbit {\n  margin-top: 0; }\n\n.App__content {\n  display: flex;\n  flex-flow: wrap; }\n\n.App__buttons {\n  margin-top: 8px; }\n\n.App__button {\n  font-size: 100%;\n  padding: .5em 1em;\n  color: #444;\n  border: 1px solid #999;\n  border: transparent;\n  background-color: #E6E6E6;\n  text-decoration: none;\n  border-radius: 2px;\n  cursor: pointer;\n  margin: 8px 8px 8px 0;\n  font-weight: 500; }\n  .App__button:active, .App__button:focus {\n    outline: 0; }\n  .App__button:disabled {\n    pointer-events: none; }\n  .App__button.is-cta {\n    background-color: #F4828C;\n    color: #ffffff; }\n";
 __$$styleInject(css$6);
+
+var css$8 = "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n  box-sizing: border-box; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n";
+__$$styleInject(css$8);
+
+var css$10 = "/*! Typebase.less v0.1.0 | MIT License */\n/* Setup */\nhtml {\n  /* Change default typefaces here */\n  font-family: serif;\n  font-size: 137.5%;\n  -webkit-font-smoothing: antialiased; }\n\n/* Copy & Lists */\np {\n  line-height: 1.5rem;\n  margin-top: 1.5rem;\n  margin-bottom: 0; }\n\nul,\nol {\n  margin-top: 1.5rem;\n  margin-bottom: 1.5rem; }\n\nul li,\nol li {\n  line-height: 1.5rem; }\n\nul ul,\nol ul,\nul ol,\nol ol {\n  margin-top: 0;\n  margin-bottom: 0; }\n\nblockquote {\n  line-height: 1.5rem;\n  margin-top: 1.5rem;\n  margin-bottom: 1.5rem; }\n\n/* Headings */\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  /* Change heading typefaces here */\n  font-family: sans-serif;\n  margin-top: 1.5rem;\n  margin-bottom: 0;\n  line-height: 1.5rem; }\n\nh1 {\n  font-size: 4.242rem;\n  line-height: 4.5rem;\n  margin-top: 3rem; }\n\nh2 {\n  font-size: 2.828rem;\n  line-height: 3rem;\n  margin-top: 3rem; }\n\nh3 {\n  font-size: 1.414rem; }\n\nh4 {\n  font-size: 0.707rem; }\n\nh5 {\n  font-size: 0.4713333333333333rem; }\n\nh6 {\n  font-size: 0.3535rem; }\n\n/* Tables */\ntable {\n  margin-top: 1.5rem;\n  border-spacing: 0px;\n  border-collapse: collapse; }\n\ntable td,\ntable th {\n  padding: 0;\n  line-height: 33px; }\n\n/* Code blocks */\ncode {\n  vertical-align: bottom;\n  font-family: Menlo,Monaco,\"Courier New\",Courier,monospace;\n  background-color: #d3d3d352;\n  color: #e16883;\n  padding: 2px;\n  font-size: .9em; }\n\n/* Leading paragraph text */\n.lead {\n  font-size: 1.414rem; }\n\n/* Hug the block above you */\n.hug {\n  margin-top: 0; }\n";
+__$$styleInject(css$10);
 
 var App = function (_Component) {
   inherits(App, _Component);
 
   function App() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
     classCallCheck(this, App);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
-    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.getBodyWidth = function () {
+    _this.getBodyWidth = function () {
       return { width: document.body.offsetWidth };
-    }, _this.renderApp = function (_ref2) {
-      var width = _ref2.width;
+    };
+
+    _this.getCards = function () {
+      var numberOfCards = _this.state.numberOfCards;
+
+      var cards = [];
+
+      for (var i = 0; i < numberOfCards; i += 1) {
+        cards.push(react.createElement(ResizeableResponsiveCard, null));
+      }
+
+      return cards;
+    };
+
+    _this.addCard = function () {
+      return _this.setState(function (state) {
+        return { numberOfCards: state.numberOfCards + 1 };
+      });
+    };
+
+    _this.removeCard = function () {
+      return _this.setState(function (state) {
+        return { numberOfCards: state.numberOfCards - 1 };
+      });
+    };
+
+    _this.renderApp = function (_ref) {
+      var width = _ref.width;
       return react.createElement(
         'div',
         { className: 'App' },
         react.createElement(
-          ResizeableResponsiveCard,
-          null,
+          'div',
+          { className: 'App__header' },
+          react.createElement(
+            'h2',
+            { className: 'App__title' },
+            'React Sentinel'
+          ),
+          react.createElement(
+            'p',
+            { className: 'App__tidbit' },
+            'With only media queries, you could only work with the fact that your browser window is currently ',
+            width,
+            'px ',
+            react.createElement(Emoji, { icon: '\uD83D\uDE29' })
+          ),
           react.createElement(
             'div',
-            { className: 'App__header' },
+            { className: 'App__buttons' },
             react.createElement(
-              'h1',
-              { className: 'App__title' },
-              'React Sentinel'
+              'button',
+              { className: 'App__button is-cta', onClick: _this.addCard },
+              'Add a card'
             ),
-            react.createElement(
-              'p',
-              { className: 'App__tidbit' },
-              'Resize the window and watch as our values update automatically!'
-            ),
-            react.createElement(
-              'p',
-              { className: 'App__tidbit' },
-              'The window size is ',
-              width,
-              'px!'
-            )
+            _this.state.numberOfCards ? react.createElement(
+              'button',
+              { className: 'App__button', onClick: _this.removeCard },
+              'Remove a card'
+            ) : null
           )
+        ),
+        react.createElement(
+          'div',
+          { className: 'App__content' },
+          _this.getCards(),
+          react.createElement(ResizeableResponsiveCard, { startSize: 600 }),
+          react.createElement(ResizeableResponsiveCard, { startSize: 485 }),
+          react.createElement(ResizeableResponsiveCard, { startSize: 325 })
         )
       );
-    }, _temp), possibleConstructorReturn(_this, _ret);
+    };
+
+    _this.state = { numberOfCards: 0 };
+    return _this;
   }
 
   createClass(App, [{
