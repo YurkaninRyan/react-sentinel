@@ -77,7 +77,6 @@
         "yarn lint"
       ],
       "post_complete_commands": [
-        "yarn publish",
         "yarn gh-pages"
       ],
       "files_to_version": [
