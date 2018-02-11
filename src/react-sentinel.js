@@ -1,43 +1,39 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-const requestCheck = window.requestIdleCallback || window.requestAnimationFrame;
-const cancelCheck = window.cancelIdleCallback || window.cancelAnimationFrame;
-
-class Sentinel extends Component {
+export default class Sentinel extends Component {
   constructor(props) {
     super();
 
     this.setLoopingFunctions(props.lowPriority);
+    this.state = props.initial;
   }
-
-  state = {}
 
   componentDidMount() { this.watch(); }
   componentWillReceiveProps(nextProps) {
     if (nextProps.lowPriority === this.props.lowPriority) return;
 
     // Make a clean slate, since we will be changing functions.
-    clearTimeout(this.watchPID);
-    this.cancelCheck(this.checkPID);
-
+    this.stop();
     this.setLoopingFunctions(nextProps.lowPriority);
     this.watch();
   }
 
   componentWillUnmount() {
-    clearTimeout(this.watchPID);
-    cancelCheck(this.checkPID);
+    this.stop();
   }
 
   setLoopingFunctions = (lowPriority) => {
     // Low priority means use requestIdleCallback
     // fallback to requestAnimationFrame
-    this.requestCheck = lowPriority ?
+    const requestCheck = lowPriority ?
       requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
 
-    this.cancelCheck = lowPriority ?
+    const cancelCheck = lowPriority ?
       cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+
+    this.requestCheck = requestCheck.bind(window);
+    this.cancelCheck = cancelCheck.bind(window);
   }
 
   watchPID = null;
@@ -45,13 +41,21 @@ class Sentinel extends Component {
 
   watch = () => {
     this.watchPID = window.setTimeout(() => {
-      this.checkPID = requestCheck(this.check);
+      this.checkPID = this.requestCheck(this.check);
     }, 0);
   };
 
+  stop = () => {
+    clearTimeout(this.watchPID);
+    this.cancelCheck(this.checkPID);
+
+    this.watchPID = null;
+    this.checkPID = null;
+  }
+
   check = () => {
     const { observe } = this.props;
-    const updates = observe(this.props);
+    const updates = observe(this.state);
 
     if (!updates) { return this.watch(); }
     const oldProps = Object.keys(this.state);
@@ -79,10 +83,12 @@ Sentinel.propTypes = {
   observe: PropTypes.func.isRequired,
   render: PropTypes.func.isRequired,
   lowPriority: PropTypes.bool,
+
+  // eslint-disable-next-line react/forbid-prop-types
+  initial: PropTypes.object,
 };
 
 Sentinel.defaultProps = {
   lowPriority: false,
+  initial: {},
 };
-
-export default Sentinel;

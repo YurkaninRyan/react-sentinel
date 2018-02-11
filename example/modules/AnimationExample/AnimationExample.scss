@@ -1,0 +1,56 @@
+.AnimationExample {
+  min-height: 100vh;
+  width: 100vw;
+  padding: 24px;
+}
+
+.AnimationExample__header {
+  margin-bottom: 24px;
+}
+
+.AnimationExample__title {
+  margin-top: 0;
+  font-size: 2rem;
+  line-height: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.AnimationExample__tidbit {
+  margin-top: 0;
+  font-size: .8rem;
+  max-width: 30em;
+  margin-bottom: 8px;
+}
+
+.AnimationExample__content {
+  display: flex;
+  flex-flow: wrap;
+}
+
+.AnimationExample__button {
+  font-size: .7rem;
+  padding: .5em 1em;
+  color: #444;
+  border: 1px solid #999;
+  border: transparent;
+  background-color: #E6E6E6;
+  text-decoration: none;
+  border-radius: 2px;
+  cursor: pointer;
+  margin: 8px 8px 8px 0;
+  font-weight: 500;
+
+  &:active, &:focus {
+    outline: 0;
+  }
+
+  &:disabled {
+    pointer-events: none;
+  }
+
+  &.is-cta {
+    background-color: #F4828C;
+    color: #ffffff;
+  }
+}

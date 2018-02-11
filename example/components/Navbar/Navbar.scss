@@ -1,0 +1,31 @@
+.Navbar {
+  width: 100%;
+  display: flex;
+  padding: 8px 74px 8px 8px;
+  align-items: center;
+  background-color: #fdfdfd;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+
+  & ul { margin: 0; }
+}
+
+.Navbar__name {
+  font-weight: 700;
+  padding: 0 8px 0 0;
+  margin: 0 8px 0 0;
+  border-right: 1px solid #cecece;
+}
+
+.Navbar__links {
+  display: flex;
+}
+
+.Navbar__link {
+  font-size: .8rem;
+  font-weight: 500;
+  text-decoration: underline;
+  color: #F4828C;
+  cursor: pointer;
+  user-select: none;
+  margin: 0 8px 0 0;
+}

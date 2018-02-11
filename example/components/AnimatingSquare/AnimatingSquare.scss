@@ -1,0 +1,11 @@
+.AnimatingSquare {
+  height: 100px;
+  width: 100px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+  &:nth-child(1n) { background-color: #593650; }
+  &:nth-child(2n) { background-color: #557359; }
+  &:nth-child(3n) { background-color: #D9D2C5; }
+  &:nth-child(4n) { background-color: #D9BB96; }
+  &:nth-child(5n) { background-color: #BF6860; }
+}

@@ -14,7 +14,6 @@ object-assign
 @license MIT
 */
 
-/* eslint-disable no-unused-vars */
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -114,15 +113,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 var emptyObject_1 = emptyObject;
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
 function makeEmptyFunction(arg) {
   return function () {
     return arg;
@@ -172,17 +162,6 @@ var W=V&&U||V;var react_production_min=W["default"]?W["default"]:W;
  *
  */
 
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
 var validateFormat = function validateFormat(format) {};
 
 if (process.env.NODE_ENV !== 'production') {
@@ -215,13 +194,6 @@ function invariant(condition, format, a, b, c, d, e, f) {
 }
 
 var invariant_1 = invariant;
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
 
 var warning = emptyFunction_1;
 
@@ -2366,9 +2338,6 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-var requestCheck = window.requestIdleCallback || window.requestAnimationFrame;
-var cancelCheck = window.cancelIdleCallback || window.cancelAnimationFrame;
-
 var Sentinel = function (_Component) {
   inherits(Sentinel, _Component);
 
@@ -2377,14 +2346,15 @@ var Sentinel = function (_Component) {
 
     var _this = possibleConstructorReturn(this, (Sentinel.__proto__ || Object.getPrototypeOf(Sentinel)).call(this));
 
-    _this.state = {};
-
     _this.setLoopingFunctions = function (lowPriority) {
       // Low priority means use requestIdleCallback
       // fallback to requestAnimationFrame
-      _this.requestCheck = lowPriority ? requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
+      var requestCheck = lowPriority ? requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
 
-      _this.cancelCheck = lowPriority ? cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+      var cancelCheck = lowPriority ? cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+
+      _this.requestCheck = requestCheck.bind(window);
+      _this.cancelCheck = cancelCheck.bind(window);
     };
 
     _this.watchPID = null;
@@ -2392,14 +2362,22 @@ var Sentinel = function (_Component) {
 
     _this.watch = function () {
       _this.watchPID = window.setTimeout(function () {
-        _this.checkPID = requestCheck(_this.check);
+        _this.checkPID = _this.requestCheck(_this.check);
       }, 0);
+    };
+
+    _this.stop = function () {
+      clearTimeout(_this.watchPID);
+      _this.cancelCheck(_this.checkPID);
+
+      _this.watchPID = null;
+      _this.checkPID = null;
     };
 
     _this.check = function () {
       var observe = _this.props.observe;
 
-      var updates = observe(_this.props);
+      var updates = observe(_this.state);
 
       if (!updates) {
         return _this.watch();
@@ -2423,6 +2401,7 @@ var Sentinel = function (_Component) {
     };
 
     _this.setLoopingFunctions(props.lowPriority);
+    _this.state = props.initial;
     return _this;
   }
 
@@ -2437,17 +2416,14 @@ var Sentinel = function (_Component) {
       if (nextProps.lowPriority === this.props.lowPriority) return;
 
       // Make a clean slate, since we will be changing functions.
-      clearTimeout(this.watchPID);
-      this.cancelCheck(this.checkPID);
-
+      this.stop();
       this.setLoopingFunctions(nextProps.lowPriority);
       this.watch();
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      clearTimeout(this.watchPID);
-      cancelCheck(this.checkPID);
+      this.stop();
     }
   }, {
     key: 'render',
@@ -2461,11 +2437,15 @@ var Sentinel = function (_Component) {
 Sentinel.propTypes = {
   observe: propTypes.func.isRequired,
   render: propTypes.func.isRequired,
-  lowPriority: propTypes.bool
+  lowPriority: propTypes.bool,
+
+  // eslint-disable-next-line react/forbid-prop-types
+  initial: propTypes.object
 };
 
 Sentinel.defaultProps = {
-  lowPriority: false
+  lowPriority: false,
+  initial: {}
 };
 
 return Sentinel;

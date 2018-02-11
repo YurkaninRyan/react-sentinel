@@ -1,4 +1,4 @@
-{
+module.exports = {
   "parser": "babel-eslint",
   "extends": "airbnb",
   "plugins": [
@@ -15,5 +15,12 @@
     "react/no-danger": 0,
     "react/prefer-stateless-function": 0,
     "no-return-assign": 0
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        paths: [`${__dirname}/example`, `${__dirname}/src`]
+      }
+    }
   }
 }

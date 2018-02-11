@@ -5,12 +5,13 @@ import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
 import serve from 'rollup-plugin-serve';
 import uglify from 'rollup-plugin-uglify';
+import include from 'rollup-plugin-includepaths';
 import pkg from './package.json';
 
 export default [
   /* Building the actual react-sentinel code */
   {
-    input: 'src/index.js',
+    input: 'src/react-sentinel.js',
     output: {
       name: 'react-sentinel',
       file: pkg.browser,
@@ -60,6 +61,10 @@ export default [
       postcss({
         plugins: [],
       }),
+      include({
+        paths: [`${__dirname}/example`, `${__dirname}/src`],
+        extensions: ['.js', '.scss'],
+      }),
       babel({
         presets: [
           'react',
@@ -85,10 +90,11 @@ export default [
         namedExports: {
           'node_modules/react/index.js': ['Children', 'Component', 'PureComponent', 'PropTypes', 'createElement'],
           'node_modules/react-dom/index.js': ['render'],
+          'node_modules/react-router/es/index.js': ['Link', 'Router', 'Route'],
         },
       }),
       replace({
-        'process.env.NODE_ENV': JSON.stringify('production'),
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
       (process.env.NODE_ENV !== 'production' && serve({
         contentBase: 'example',
