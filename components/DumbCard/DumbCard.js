@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './DumbCard.scss';
+import 'components/DumbCard/DumbCard.scss';
 
 export default class DumbCard extends Component {
   render() {

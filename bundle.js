@@ -28,6 +28,10 @@ function __$$styleInject(css, ref) {
   }
 }
 
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
@@ -846,6 +850,67 @@ function checkDCE() {
 
 var reactDom_1 = reactDom.render;
 
+/**
+ * Copyright 2014-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var __DEV__ = "production" !== 'production';
+
+var warning$3 = function() {};
+
+if (__DEV__) {
+  warning$3 = function(condition, format, args) {
+    var len = arguments.length;
+    args = new Array(len > 2 ? len - 2 : 0);
+    for (var key = 2; key < len; key++) {
+      args[key - 2] = arguments[key];
+    }
+    if (format === undefined) {
+      throw new Error(
+        '`warning(condition, format, ...args)` requires a warning ' +
+        'message argument'
+      );
+    }
+
+    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
+      throw new Error(
+        'The warning format should be able to uniquely identify this ' +
+        'warning. Please, use a more descriptive format than: ' + format
+      );
+    }
+
+    if (!condition) {
+      var argIndex = 0;
+      var message = 'Warning: ' +
+        format.replace(/%s/g, function() {
+          return args[argIndex++];
+        });
+      if (typeof console !== 'undefined') {
+        console.error(message);
+      }
+      try {
+        // This error was thrown as a convenience so that you can use this stack
+        // to find the callsite that caused this warning to fire.
+        throw new Error(message);
+      } catch(x) {}
+    }
+  };
+}
+
+var warning_1$2 = warning$3;
+
 var factoryWithThrowingShims = function() {
   function shim(props, propName, componentName, location, propFullName, secret) {
     if (secret === ReactPropTypesSecret_1) {
@@ -906,6 +971,2840 @@ var propTypes = createCommonjsModule(function (module) {
   module.exports = factoryWithThrowingShims();
 }
 });
+
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var NODE_ENV = "production";
+
+var invariant$3 = function(condition, format, a, b, c, d, e, f) {
+  if (NODE_ENV !== 'production') {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  }
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error(
+        'Minified exception occurred; use the non-minified dev environment ' +
+        'for the full error message and additional helpful warnings.'
+      );
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(
+        format.replace(/%s/g, function() { return args[argIndex++]; })
+      );
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+};
+
+var invariant_1$2 = invariant$3;
+
+function isAbsolute(pathname) {
+  return pathname.charAt(0) === '/';
+}
+
+// About 1.5x faster than the two-arg version of Array#splice()
+function spliceOne(list, index) {
+  for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1) {
+    list[i] = list[k];
+  }
+
+  list.pop();
+}
+
+// This implementation is based heavily on node's url.parse
+function resolvePathname(to) {
+  var from = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+  var toParts = to && to.split('/') || [];
+  var fromParts = from && from.split('/') || [];
+
+  var isToAbs = to && isAbsolute(to);
+  var isFromAbs = from && isAbsolute(from);
+  var mustEndAbs = isToAbs || isFromAbs;
+
+  if (to && isAbsolute(to)) {
+    // to is absolute
+    fromParts = toParts;
+  } else if (toParts.length) {
+    // to is relative, drop the filename
+    fromParts.pop();
+    fromParts = fromParts.concat(toParts);
+  }
+
+  if (!fromParts.length) return '/';
+
+  var hasTrailingSlash = void 0;
+  if (fromParts.length) {
+    var last = fromParts[fromParts.length - 1];
+    hasTrailingSlash = last === '.' || last === '..' || last === '';
+  } else {
+    hasTrailingSlash = false;
+  }
+
+  var up = 0;
+  for (var i = fromParts.length; i >= 0; i--) {
+    var part = fromParts[i];
+
+    if (part === '.') {
+      spliceOne(fromParts, i);
+    } else if (part === '..') {
+      spliceOne(fromParts, i);
+      up++;
+    } else if (up) {
+      spliceOne(fromParts, i);
+      up--;
+    }
+  }
+
+  if (!mustEndAbs) for (; up--; up) {
+    fromParts.unshift('..');
+  }if (mustEndAbs && fromParts[0] !== '' && (!fromParts[0] || !isAbsolute(fromParts[0]))) fromParts.unshift('');
+
+  var result = fromParts.join('/');
+
+  if (hasTrailingSlash && result.substr(-1) !== '/') result += '/';
+
+  return result;
+}
+
+
+
+var resolvePathname$2 = Object.freeze({
+	default: resolvePathname
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function valueEqual(a, b) {
+  if (a === b) return true;
+
+  if (a == null || b == null) return false;
+
+  if (Array.isArray(a)) {
+    return Array.isArray(b) && a.length === b.length && a.every(function (item, index) {
+      return valueEqual(item, b[index]);
+    });
+  }
+
+  var aType = typeof a === 'undefined' ? 'undefined' : _typeof(a);
+  var bType = typeof b === 'undefined' ? 'undefined' : _typeof(b);
+
+  if (aType !== bType) return false;
+
+  if (aType === 'object') {
+    var aValue = a.valueOf();
+    var bValue = b.valueOf();
+
+    if (aValue !== a || bValue !== b) return valueEqual(aValue, bValue);
+
+    var aKeys = Object.keys(a);
+    var bKeys = Object.keys(b);
+
+    if (aKeys.length !== bKeys.length) return false;
+
+    return aKeys.every(function (key) {
+      return valueEqual(a[key], b[key]);
+    });
+  }
+
+  return false;
+}
+
+
+
+var valueEqual$2 = Object.freeze({
+	default: valueEqual
+});
+
+var PathUtils = createCommonjsModule(function (module, exports) {
+exports.__esModule = true;
+var addLeadingSlash = exports.addLeadingSlash = function addLeadingSlash(path) {
+  return path.charAt(0) === '/' ? path : '/' + path;
+};
+
+var stripLeadingSlash = exports.stripLeadingSlash = function stripLeadingSlash(path) {
+  return path.charAt(0) === '/' ? path.substr(1) : path;
+};
+
+var hasBasename = exports.hasBasename = function hasBasename(path, prefix) {
+  return new RegExp('^' + prefix + '(\\/|\\?|#|$)', 'i').test(path);
+};
+
+var stripBasename = exports.stripBasename = function stripBasename(path, prefix) {
+  return hasBasename(path, prefix) ? path.substr(prefix.length) : path;
+};
+
+var stripTrailingSlash = exports.stripTrailingSlash = function stripTrailingSlash(path) {
+  return path.charAt(path.length - 1) === '/' ? path.slice(0, -1) : path;
+};
+
+var parsePath = exports.parsePath = function parsePath(path) {
+  var pathname = path || '/';
+  var search = '';
+  var hash = '';
+
+  var hashIndex = pathname.indexOf('#');
+  if (hashIndex !== -1) {
+    hash = pathname.substr(hashIndex);
+    pathname = pathname.substr(0, hashIndex);
+  }
+
+  var searchIndex = pathname.indexOf('?');
+  if (searchIndex !== -1) {
+    search = pathname.substr(searchIndex);
+    pathname = pathname.substr(0, searchIndex);
+  }
+
+  return {
+    pathname: pathname,
+    search: search === '?' ? '' : search,
+    hash: hash === '#' ? '' : hash
+  };
+};
+
+var createPath = exports.createPath = function createPath(location) {
+  var pathname = location.pathname,
+      search = location.search,
+      hash = location.hash;
+
+
+  var path = pathname || '/';
+
+  if (search && search !== '?') path += search.charAt(0) === '?' ? search : '?' + search;
+
+  if (hash && hash !== '#') path += hash.charAt(0) === '#' ? hash : '#' + hash;
+
+  return path;
+};
+});
+
+unwrapExports(PathUtils);
+var PathUtils_1 = PathUtils.addLeadingSlash;
+var PathUtils_2 = PathUtils.stripLeadingSlash;
+var PathUtils_3 = PathUtils.hasBasename;
+var PathUtils_4 = PathUtils.stripBasename;
+var PathUtils_5 = PathUtils.stripTrailingSlash;
+var PathUtils_6 = PathUtils.parsePath;
+var PathUtils_7 = PathUtils.createPath;
+
+var _resolvePathname = ( resolvePathname$2 && resolvePathname ) || resolvePathname$2;
+
+var _valueEqual = ( valueEqual$2 && valueEqual ) || valueEqual$2;
+
+var LocationUtils = createCommonjsModule(function (module, exports) {
+exports.__esModule = true;
+exports.locationsAreEqual = exports.createLocation = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
+
+var _resolvePathname2 = _interopRequireDefault(_resolvePathname);
+
+
+
+var _valueEqual2 = _interopRequireDefault(_valueEqual);
+
+
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var createLocation = exports.createLocation = function createLocation(path, state, key, currentLocation) {
+  var location = void 0;
+  if (typeof path === 'string') {
+    // Two-arg form: push(path, state)
+    location = (0, PathUtils.parsePath)(path);
+    location.state = state;
+  } else {
+    // One-arg form: push(location)
+    location = _extends({}, path);
+
+    if (location.pathname === undefined) location.pathname = '';
+
+    if (location.search) {
+      if (location.search.charAt(0) !== '?') location.search = '?' + location.search;
+    } else {
+      location.search = '';
+    }
+
+    if (location.hash) {
+      if (location.hash.charAt(0) !== '#') location.hash = '#' + location.hash;
+    } else {
+      location.hash = '';
+    }
+
+    if (state !== undefined && location.state === undefined) location.state = state;
+  }
+
+  try {
+    location.pathname = decodeURI(location.pathname);
+  } catch (e) {
+    if (e instanceof URIError) {
+      throw new URIError('Pathname "' + location.pathname + '" could not be decoded. ' + 'This is likely caused by an invalid percent-encoding.');
+    } else {
+      throw e;
+    }
+  }
+
+  if (key) location.key = key;
+
+  if (currentLocation) {
+    // Resolve incomplete/relative pathname relative to current location.
+    if (!location.pathname) {
+      location.pathname = currentLocation.pathname;
+    } else if (location.pathname.charAt(0) !== '/') {
+      location.pathname = (0, _resolvePathname2.default)(location.pathname, currentLocation.pathname);
+    }
+  } else {
+    // When there is no prior location and pathname is empty, set it to /
+    if (!location.pathname) {
+      location.pathname = '/';
+    }
+  }
+
+  return location;
+};
+
+var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a, b) {
+  return a.pathname === b.pathname && a.search === b.search && a.hash === b.hash && a.key === b.key && (0, _valueEqual2.default)(a.state, b.state);
+};
+});
+
+unwrapExports(LocationUtils);
+var LocationUtils_1 = LocationUtils.locationsAreEqual;
+var LocationUtils_2 = LocationUtils.createLocation;
+
+var createTransitionManager_1 = createCommonjsModule(function (module, exports) {
+exports.__esModule = true;
+
+
+
+var _warning2 = _interopRequireDefault(warning_1$2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var createTransitionManager = function createTransitionManager() {
+  var prompt = null;
+
+  var setPrompt = function setPrompt(nextPrompt) {
+    (0, _warning2.default)(prompt == null, 'A history supports only one prompt at a time');
+
+    prompt = nextPrompt;
+
+    return function () {
+      if (prompt === nextPrompt) prompt = null;
+    };
+  };
+
+  var confirmTransitionTo = function confirmTransitionTo(location, action, getUserConfirmation, callback) {
+    // TODO: If another transition starts while we're still confirming
+    // the previous one, we may end up in a weird state. Figure out the
+    // best way to handle this.
+    if (prompt != null) {
+      var result = typeof prompt === 'function' ? prompt(location, action) : prompt;
+
+      if (typeof result === 'string') {
+        if (typeof getUserConfirmation === 'function') {
+          getUserConfirmation(result, callback);
+        } else {
+          (0, _warning2.default)(false, 'A history needs a getUserConfirmation function in order to use a prompt message');
+
+          callback(true);
+        }
+      } else {
+        // Return false from a transition hook to cancel the transition.
+        callback(result !== false);
+      }
+    } else {
+      callback(true);
+    }
+  };
+
+  var listeners = [];
+
+  var appendListener = function appendListener(fn) {
+    var isActive = true;
+
+    var listener = function listener() {
+      if (isActive) fn.apply(undefined, arguments);
+    };
+
+    listeners.push(listener);
+
+    return function () {
+      isActive = false;
+      listeners = listeners.filter(function (item) {
+        return item !== listener;
+      });
+    };
+  };
+
+  var notifyListeners = function notifyListeners() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    listeners.forEach(function (listener) {
+      return listener.apply(undefined, args);
+    });
+  };
+
+  return {
+    setPrompt: setPrompt,
+    confirmTransitionTo: confirmTransitionTo,
+    appendListener: appendListener,
+    notifyListeners: notifyListeners
+  };
+};
+
+exports.default = createTransitionManager;
+});
+
+unwrapExports(createTransitionManager_1);
+
+var DOMUtils = createCommonjsModule(function (module, exports) {
+exports.__esModule = true;
+var canUseDOM = exports.canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
+
+var addEventListener = exports.addEventListener = function addEventListener(node, event, listener) {
+  return node.addEventListener ? node.addEventListener(event, listener, false) : node.attachEvent('on' + event, listener);
+};
+
+var removeEventListener = exports.removeEventListener = function removeEventListener(node, event, listener) {
+  return node.removeEventListener ? node.removeEventListener(event, listener, false) : node.detachEvent('on' + event, listener);
+};
+
+var getConfirmation = exports.getConfirmation = function getConfirmation(message, callback) {
+  return callback(window.confirm(message));
+}; // eslint-disable-line no-alert
+
+/**
+ * Returns true if the HTML5 history API is supported. Taken from Modernizr.
+ *
+ * https://github.com/Modernizr/Modernizr/blob/master/LICENSE
+ * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/history.js
+ * changed to avoid false negatives for Windows Phones: https://github.com/reactjs/react-router/issues/586
+ */
+var supportsHistory = exports.supportsHistory = function supportsHistory() {
+  var ua = window.navigator.userAgent;
+
+  if ((ua.indexOf('Android 2.') !== -1 || ua.indexOf('Android 4.0') !== -1) && ua.indexOf('Mobile Safari') !== -1 && ua.indexOf('Chrome') === -1 && ua.indexOf('Windows Phone') === -1) return false;
+
+  return window.history && 'pushState' in window.history;
+};
+
+/**
+ * Returns true if browser fires popstate on hash change.
+ * IE10 and IE11 do not.
+ */
+var supportsPopStateOnHashChange = exports.supportsPopStateOnHashChange = function supportsPopStateOnHashChange() {
+  return window.navigator.userAgent.indexOf('Trident') === -1;
+};
+
+/**
+ * Returns false if using go(n) with hash history causes a full page reload.
+ */
+var supportsGoWithoutReloadUsingHash = exports.supportsGoWithoutReloadUsingHash = function supportsGoWithoutReloadUsingHash() {
+  return window.navigator.userAgent.indexOf('Firefox') === -1;
+};
+
+/**
+ * Returns true if a given popstate event is an extraneous WebKit event.
+ * Accounts for the fact that Chrome on iOS fires real popstate events
+ * containing undefined state when pressing the back button.
+ */
+var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
+  return event.state === undefined && navigator.userAgent.indexOf('CriOS') === -1;
+};
+});
+
+unwrapExports(DOMUtils);
+var DOMUtils_1 = DOMUtils.canUseDOM;
+var DOMUtils_2 = DOMUtils.addEventListener;
+var DOMUtils_3 = DOMUtils.removeEventListener;
+var DOMUtils_4 = DOMUtils.getConfirmation;
+var DOMUtils_5 = DOMUtils.supportsHistory;
+var DOMUtils_6 = DOMUtils.supportsPopStateOnHashChange;
+var DOMUtils_7 = DOMUtils.supportsGoWithoutReloadUsingHash;
+var DOMUtils_8 = DOMUtils.isExtraneousPopstateEvent;
+
+var createBrowserHistory_1 = createCommonjsModule(function (module, exports) {
+exports.__esModule = true;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
+
+var _warning2 = _interopRequireDefault(warning_1$2);
+
+
+
+var _invariant2 = _interopRequireDefault(invariant_1$2);
+
+
+
+
+
+
+
+var _createTransitionManager2 = _interopRequireDefault(createTransitionManager_1);
+
+
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PopStateEvent = 'popstate';
+var HashChangeEvent = 'hashchange';
+
+var getHistoryState = function getHistoryState() {
+  try {
+    return window.history.state || {};
+  } catch (e) {
+    // IE 11 sometimes throws when accessing window.history.state
+    // See https://github.com/ReactTraining/history/pull/289
+    return {};
+  }
+};
+
+/**
+ * Creates a history object that uses the HTML5 history API including
+ * pushState, replaceState, and the popstate event.
+ */
+var createBrowserHistory = function createBrowserHistory() {
+  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  (0, _invariant2.default)(DOMUtils.canUseDOM, 'Browser history needs a DOM');
+
+  var globalHistory = window.history;
+  var canUseHistory = (0, DOMUtils.supportsHistory)();
+  var needsHashChangeListener = !(0, DOMUtils.supportsPopStateOnHashChange)();
+
+  var _props$forceRefresh = props.forceRefresh,
+      forceRefresh = _props$forceRefresh === undefined ? false : _props$forceRefresh,
+      _props$getUserConfirm = props.getUserConfirmation,
+      getUserConfirmation = _props$getUserConfirm === undefined ? DOMUtils.getConfirmation : _props$getUserConfirm,
+      _props$keyLength = props.keyLength,
+      keyLength = _props$keyLength === undefined ? 6 : _props$keyLength;
+
+  var basename = props.basename ? (0, PathUtils.stripTrailingSlash)((0, PathUtils.addLeadingSlash)(props.basename)) : '';
+
+  var getDOMLocation = function getDOMLocation(historyState) {
+    var _ref = historyState || {},
+        key = _ref.key,
+        state = _ref.state;
+
+    var _window$location = window.location,
+        pathname = _window$location.pathname,
+        search = _window$location.search,
+        hash = _window$location.hash;
+
+
+    var path = pathname + search + hash;
+
+    (0, _warning2.default)(!basename || (0, PathUtils.hasBasename)(path, basename), 'You are attempting to use a basename on a page whose URL path does not begin ' + 'with the basename. Expected path "' + path + '" to begin with "' + basename + '".');
+
+    if (basename) path = (0, PathUtils.stripBasename)(path, basename);
+
+    return (0, LocationUtils.createLocation)(path, state, key);
+  };
+
+  var createKey = function createKey() {
+    return Math.random().toString(36).substr(2, keyLength);
+  };
+
+  var transitionManager = (0, _createTransitionManager2.default)();
+
+  var setState = function setState(nextState) {
+    _extends(history, nextState);
+
+    history.length = globalHistory.length;
+
+    transitionManager.notifyListeners(history.location, history.action);
+  };
+
+  var handlePopState = function handlePopState(event) {
+    // Ignore extraneous popstate events in WebKit.
+    if ((0, DOMUtils.isExtraneousPopstateEvent)(event)) return;
+
+    handlePop(getDOMLocation(event.state));
+  };
+
+  var handleHashChange = function handleHashChange() {
+    handlePop(getDOMLocation(getHistoryState()));
+  };
+
+  var forceNextPop = false;
+
+  var handlePop = function handlePop(location) {
+    if (forceNextPop) {
+      forceNextPop = false;
+      setState();
+    } else {
+      var action = 'POP';
+
+      transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+        if (ok) {
+          setState({ action: action, location: location });
+        } else {
+          revertPop(location);
+        }
+      });
+    }
+  };
+
+  var revertPop = function revertPop(fromLocation) {
+    var toLocation = history.location;
+
+    // TODO: We could probably make this more reliable by
+    // keeping a list of keys we've seen in sessionStorage.
+    // Instead, we just default to 0 for keys we don't know.
+
+    var toIndex = allKeys.indexOf(toLocation.key);
+
+    if (toIndex === -1) toIndex = 0;
+
+    var fromIndex = allKeys.indexOf(fromLocation.key);
+
+    if (fromIndex === -1) fromIndex = 0;
+
+    var delta = toIndex - fromIndex;
+
+    if (delta) {
+      forceNextPop = true;
+      go(delta);
+    }
+  };
+
+  var initialLocation = getDOMLocation(getHistoryState());
+  var allKeys = [initialLocation.key];
+
+  // Public interface
+
+  var createHref = function createHref(location) {
+    return basename + (0, PathUtils.createPath)(location);
+  };
+
+  var push = function push(path, state) {
+    (0, _warning2.default)(!((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path.state !== undefined && state !== undefined), 'You should avoid providing a 2nd state argument to push when the 1st ' + 'argument is a location-like object that already has state; it is ignored');
+
+    var action = 'PUSH';
+    var location = (0, LocationUtils.createLocation)(path, state, createKey(), history.location);
+
+    transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+      if (!ok) return;
+
+      var href = createHref(location);
+      var key = location.key,
+          state = location.state;
+
+
+      if (canUseHistory) {
+        globalHistory.pushState({ key: key, state: state }, null, href);
+
+        if (forceRefresh) {
+          window.location.href = href;
+        } else {
+          var prevIndex = allKeys.indexOf(history.location.key);
+          var nextKeys = allKeys.slice(0, prevIndex === -1 ? 0 : prevIndex + 1);
+
+          nextKeys.push(location.key);
+          allKeys = nextKeys;
+
+          setState({ action: action, location: location });
+        }
+      } else {
+        (0, _warning2.default)(state === undefined, 'Browser history cannot push state in browsers that do not support HTML5 history');
+
+        window.location.href = href;
+      }
+    });
+  };
+
+  var replace = function replace(path, state) {
+    (0, _warning2.default)(!((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path.state !== undefined && state !== undefined), 'You should avoid providing a 2nd state argument to replace when the 1st ' + 'argument is a location-like object that already has state; it is ignored');
+
+    var action = 'REPLACE';
+    var location = (0, LocationUtils.createLocation)(path, state, createKey(), history.location);
+
+    transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+      if (!ok) return;
+
+      var href = createHref(location);
+      var key = location.key,
+          state = location.state;
+
+
+      if (canUseHistory) {
+        globalHistory.replaceState({ key: key, state: state }, null, href);
+
+        if (forceRefresh) {
+          window.location.replace(href);
+        } else {
+          var prevIndex = allKeys.indexOf(history.location.key);
+
+          if (prevIndex !== -1) allKeys[prevIndex] = location.key;
+
+          setState({ action: action, location: location });
+        }
+      } else {
+        (0, _warning2.default)(state === undefined, 'Browser history cannot replace state in browsers that do not support HTML5 history');
+
+        window.location.replace(href);
+      }
+    });
+  };
+
+  var go = function go(n) {
+    globalHistory.go(n);
+  };
+
+  var goBack = function goBack() {
+    return go(-1);
+  };
+
+  var goForward = function goForward() {
+    return go(1);
+  };
+
+  var listenerCount = 0;
+
+  var checkDOMListeners = function checkDOMListeners(delta) {
+    listenerCount += delta;
+
+    if (listenerCount === 1) {
+      (0, DOMUtils.addEventListener)(window, PopStateEvent, handlePopState);
+
+      if (needsHashChangeListener) (0, DOMUtils.addEventListener)(window, HashChangeEvent, handleHashChange);
+    } else if (listenerCount === 0) {
+      (0, DOMUtils.removeEventListener)(window, PopStateEvent, handlePopState);
+
+      if (needsHashChangeListener) (0, DOMUtils.removeEventListener)(window, HashChangeEvent, handleHashChange);
+    }
+  };
+
+  var isBlocked = false;
+
+  var block = function block() {
+    var prompt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    var unblock = transitionManager.setPrompt(prompt);
+
+    if (!isBlocked) {
+      checkDOMListeners(1);
+      isBlocked = true;
+    }
+
+    return function () {
+      if (isBlocked) {
+        isBlocked = false;
+        checkDOMListeners(-1);
+      }
+
+      return unblock();
+    };
+  };
+
+  var listen = function listen(listener) {
+    var unlisten = transitionManager.appendListener(listener);
+    checkDOMListeners(1);
+
+    return function () {
+      checkDOMListeners(-1);
+      unlisten();
+    };
+  };
+
+  var history = {
+    length: globalHistory.length,
+    action: 'POP',
+    location: initialLocation,
+    createHref: createHref,
+    push: push,
+    replace: replace,
+    go: go,
+    goBack: goBack,
+    goForward: goForward,
+    block: block,
+    listen: listen
+  };
+
+  return history;
+};
+
+exports.default = createBrowserHistory;
+});
+
+var createHistory = unwrapExports(createBrowserHistory_1);
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * The public API for putting history on context.
+ */
+
+var Router = function (_React$Component) {
+  _inherits(Router, _React$Component);
+
+  function Router() {
+    var _temp, _this, _ret;
+
+    _classCallCheck(this, Router);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
+      match: _this.computeMatch(_this.props.history.location.pathname)
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  Router.prototype.getChildContext = function getChildContext() {
+    return {
+      router: _extends({}, this.context.router, {
+        history: this.props.history,
+        route: {
+          location: this.props.history.location,
+          match: this.state.match
+        }
+      })
+    };
+  };
+
+  Router.prototype.computeMatch = function computeMatch(pathname) {
+    return {
+      path: '/',
+      url: '/',
+      params: {},
+      isExact: pathname === '/'
+    };
+  };
+
+  Router.prototype.componentWillMount = function componentWillMount() {
+    var _this2 = this;
+
+    var _props = this.props,
+        children = _props.children,
+        history = _props.history;
+
+
+    invariant_1$2(children == null || react.Children.count(children) === 1, 'A <Router> may have only one child element');
+
+    // Do this here so we can setState when a <Redirect> changes the
+    // location in componentWillMount. This happens e.g. when doing
+    // server rendering using a <StaticRouter>.
+    this.unlisten = history.listen(function () {
+      _this2.setState({
+        match: _this2.computeMatch(history.location.pathname)
+      });
+    });
+  };
+
+  Router.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+    warning_1$2(this.props.history === nextProps.history, 'You cannot change <Router history>');
+  };
+
+  Router.prototype.componentWillUnmount = function componentWillUnmount() {
+    this.unlisten();
+  };
+
+  Router.prototype.render = function render() {
+    var children = this.props.children;
+
+    return children ? react.Children.only(children) : null;
+  };
+
+  return Router;
+}(react.Component);
+
+Router.propTypes = {
+  history: propTypes.object.isRequired,
+  children: propTypes.node
+};
+Router.contextTypes = {
+  router: propTypes.object
+};
+Router.childContextTypes = {
+  router: propTypes.object.isRequired
+};
+
+// Written in this round about way for babel-transform-imports
+
+function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$1(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$1(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * The public API for a <Router> that uses HTML5 history.
+ */
+
+var BrowserRouter = function (_React$Component) {
+  _inherits$1(BrowserRouter, _React$Component);
+
+  function BrowserRouter() {
+    var _temp, _this, _ret;
+
+    _classCallCheck$1(this, BrowserRouter);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn$1(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = createHistory(_this.props), _temp), _possibleConstructorReturn$1(_this, _ret);
+  }
+
+  BrowserRouter.prototype.componentWillMount = function componentWillMount() {
+    warning_1$2(!this.props.history, '<BrowserRouter> ignores the history prop. To use a custom history, ' + 'use `import { Router }` instead of `import { BrowserRouter as Router }`.');
+  };
+
+  BrowserRouter.prototype.render = function render() {
+    return react.createElement(Router, { history: this.history, children: this.props.children });
+  };
+
+  return BrowserRouter;
+}(react.Component);
+
+BrowserRouter.propTypes = {
+  basename: propTypes.string,
+  forceRefresh: propTypes.bool,
+  getUserConfirmation: propTypes.func,
+  keyLength: propTypes.number,
+  children: propTypes.node
+};
+
+var createHashHistory_1 = createCommonjsModule(function (module, exports) {
+exports.__esModule = true;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
+
+var _warning2 = _interopRequireDefault(warning_1$2);
+
+
+
+var _invariant2 = _interopRequireDefault(invariant_1$2);
+
+
+
+
+
+
+
+var _createTransitionManager2 = _interopRequireDefault(createTransitionManager_1);
+
+
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var HashChangeEvent = 'hashchange';
+
+var HashPathCoders = {
+  hashbang: {
+    encodePath: function encodePath(path) {
+      return path.charAt(0) === '!' ? path : '!/' + (0, PathUtils.stripLeadingSlash)(path);
+    },
+    decodePath: function decodePath(path) {
+      return path.charAt(0) === '!' ? path.substr(1) : path;
+    }
+  },
+  noslash: {
+    encodePath: PathUtils.stripLeadingSlash,
+    decodePath: PathUtils.addLeadingSlash
+  },
+  slash: {
+    encodePath: PathUtils.addLeadingSlash,
+    decodePath: PathUtils.addLeadingSlash
+  }
+};
+
+var getHashPath = function getHashPath() {
+  // We can't use window.location.hash here because it's not
+  // consistent across browsers - Firefox will pre-decode it!
+  var href = window.location.href;
+  var hashIndex = href.indexOf('#');
+  return hashIndex === -1 ? '' : href.substring(hashIndex + 1);
+};
+
+var pushHashPath = function pushHashPath(path) {
+  return window.location.hash = path;
+};
+
+var replaceHashPath = function replaceHashPath(path) {
+  var hashIndex = window.location.href.indexOf('#');
+
+  window.location.replace(window.location.href.slice(0, hashIndex >= 0 ? hashIndex : 0) + '#' + path);
+};
+
+var createHashHistory = function createHashHistory() {
+  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  (0, _invariant2.default)(DOMUtils.canUseDOM, 'Hash history needs a DOM');
+
+  var globalHistory = window.history;
+  var canGoWithoutReload = (0, DOMUtils.supportsGoWithoutReloadUsingHash)();
+
+  var _props$getUserConfirm = props.getUserConfirmation,
+      getUserConfirmation = _props$getUserConfirm === undefined ? DOMUtils.getConfirmation : _props$getUserConfirm,
+      _props$hashType = props.hashType,
+      hashType = _props$hashType === undefined ? 'slash' : _props$hashType;
+
+  var basename = props.basename ? (0, PathUtils.stripTrailingSlash)((0, PathUtils.addLeadingSlash)(props.basename)) : '';
+
+  var _HashPathCoders$hashT = HashPathCoders[hashType],
+      encodePath = _HashPathCoders$hashT.encodePath,
+      decodePath = _HashPathCoders$hashT.decodePath;
+
+
+  var getDOMLocation = function getDOMLocation() {
+    var path = decodePath(getHashPath());
+
+    (0, _warning2.default)(!basename || (0, PathUtils.hasBasename)(path, basename), 'You are attempting to use a basename on a page whose URL path does not begin ' + 'with the basename. Expected path "' + path + '" to begin with "' + basename + '".');
+
+    if (basename) path = (0, PathUtils.stripBasename)(path, basename);
+
+    return (0, LocationUtils.createLocation)(path);
+  };
+
+  var transitionManager = (0, _createTransitionManager2.default)();
+
+  var setState = function setState(nextState) {
+    _extends(history, nextState);
+
+    history.length = globalHistory.length;
+
+    transitionManager.notifyListeners(history.location, history.action);
+  };
+
+  var forceNextPop = false;
+  var ignorePath = null;
+
+  var handleHashChange = function handleHashChange() {
+    var path = getHashPath();
+    var encodedPath = encodePath(path);
+
+    if (path !== encodedPath) {
+      // Ensure we always have a properly-encoded hash.
+      replaceHashPath(encodedPath);
+    } else {
+      var location = getDOMLocation();
+      var prevLocation = history.location;
+
+      if (!forceNextPop && (0, LocationUtils.locationsAreEqual)(prevLocation, location)) return; // A hashchange doesn't always == location change.
+
+      if (ignorePath === (0, PathUtils.createPath)(location)) return; // Ignore this change; we already setState in push/replace.
+
+      ignorePath = null;
+
+      handlePop(location);
+    }
+  };
+
+  var handlePop = function handlePop(location) {
+    if (forceNextPop) {
+      forceNextPop = false;
+      setState();
+    } else {
+      var action = 'POP';
+
+      transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+        if (ok) {
+          setState({ action: action, location: location });
+        } else {
+          revertPop(location);
+        }
+      });
+    }
+  };
+
+  var revertPop = function revertPop(fromLocation) {
+    var toLocation = history.location;
+
+    // TODO: We could probably make this more reliable by
+    // keeping a list of paths we've seen in sessionStorage.
+    // Instead, we just default to 0 for paths we don't know.
+
+    var toIndex = allPaths.lastIndexOf((0, PathUtils.createPath)(toLocation));
+
+    if (toIndex === -1) toIndex = 0;
+
+    var fromIndex = allPaths.lastIndexOf((0, PathUtils.createPath)(fromLocation));
+
+    if (fromIndex === -1) fromIndex = 0;
+
+    var delta = toIndex - fromIndex;
+
+    if (delta) {
+      forceNextPop = true;
+      go(delta);
+    }
+  };
+
+  // Ensure the hash is encoded properly before doing anything else.
+  var path = getHashPath();
+  var encodedPath = encodePath(path);
+
+  if (path !== encodedPath) replaceHashPath(encodedPath);
+
+  var initialLocation = getDOMLocation();
+  var allPaths = [(0, PathUtils.createPath)(initialLocation)];
+
+  // Public interface
+
+  var createHref = function createHref(location) {
+    return '#' + encodePath(basename + (0, PathUtils.createPath)(location));
+  };
+
+  var push = function push(path, state) {
+    (0, _warning2.default)(state === undefined, 'Hash history cannot push state; it is ignored');
+
+    var action = 'PUSH';
+    var location = (0, LocationUtils.createLocation)(path, undefined, undefined, history.location);
+
+    transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+      if (!ok) return;
+
+      var path = (0, PathUtils.createPath)(location);
+      var encodedPath = encodePath(basename + path);
+      var hashChanged = getHashPath() !== encodedPath;
+
+      if (hashChanged) {
+        // We cannot tell if a hashchange was caused by a PUSH, so we'd
+        // rather setState here and ignore the hashchange. The caveat here
+        // is that other hash histories in the page will consider it a POP.
+        ignorePath = path;
+        pushHashPath(encodedPath);
+
+        var prevIndex = allPaths.lastIndexOf((0, PathUtils.createPath)(history.location));
+        var nextPaths = allPaths.slice(0, prevIndex === -1 ? 0 : prevIndex + 1);
+
+        nextPaths.push(path);
+        allPaths = nextPaths;
+
+        setState({ action: action, location: location });
+      } else {
+        (0, _warning2.default)(false, 'Hash history cannot PUSH the same path; a new entry will not be added to the history stack');
+
+        setState();
+      }
+    });
+  };
+
+  var replace = function replace(path, state) {
+    (0, _warning2.default)(state === undefined, 'Hash history cannot replace state; it is ignored');
+
+    var action = 'REPLACE';
+    var location = (0, LocationUtils.createLocation)(path, undefined, undefined, history.location);
+
+    transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+      if (!ok) return;
+
+      var path = (0, PathUtils.createPath)(location);
+      var encodedPath = encodePath(basename + path);
+      var hashChanged = getHashPath() !== encodedPath;
+
+      if (hashChanged) {
+        // We cannot tell if a hashchange was caused by a REPLACE, so we'd
+        // rather setState here and ignore the hashchange. The caveat here
+        // is that other hash histories in the page will consider it a POP.
+        ignorePath = path;
+        replaceHashPath(encodedPath);
+      }
+
+      var prevIndex = allPaths.indexOf((0, PathUtils.createPath)(history.location));
+
+      if (prevIndex !== -1) allPaths[prevIndex] = path;
+
+      setState({ action: action, location: location });
+    });
+  };
+
+  var go = function go(n) {
+    (0, _warning2.default)(canGoWithoutReload, 'Hash history go(n) causes a full page reload in this browser');
+
+    globalHistory.go(n);
+  };
+
+  var goBack = function goBack() {
+    return go(-1);
+  };
+
+  var goForward = function goForward() {
+    return go(1);
+  };
+
+  var listenerCount = 0;
+
+  var checkDOMListeners = function checkDOMListeners(delta) {
+    listenerCount += delta;
+
+    if (listenerCount === 1) {
+      (0, DOMUtils.addEventListener)(window, HashChangeEvent, handleHashChange);
+    } else if (listenerCount === 0) {
+      (0, DOMUtils.removeEventListener)(window, HashChangeEvent, handleHashChange);
+    }
+  };
+
+  var isBlocked = false;
+
+  var block = function block() {
+    var prompt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    var unblock = transitionManager.setPrompt(prompt);
+
+    if (!isBlocked) {
+      checkDOMListeners(1);
+      isBlocked = true;
+    }
+
+    return function () {
+      if (isBlocked) {
+        isBlocked = false;
+        checkDOMListeners(-1);
+      }
+
+      return unblock();
+    };
+  };
+
+  var listen = function listen(listener) {
+    var unlisten = transitionManager.appendListener(listener);
+    checkDOMListeners(1);
+
+    return function () {
+      checkDOMListeners(-1);
+      unlisten();
+    };
+  };
+
+  var history = {
+    length: globalHistory.length,
+    action: 'POP',
+    location: initialLocation,
+    createHref: createHref,
+    push: push,
+    replace: replace,
+    go: go,
+    goBack: goBack,
+    goForward: goForward,
+    block: block,
+    listen: listen
+  };
+
+  return history;
+};
+
+exports.default = createHashHistory;
+});
+
+var createHistory$1 = unwrapExports(createHashHistory_1);
+
+function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$2(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * The public API for a <Router> that uses window.location.hash.
+ */
+
+var HashRouter = function (_React$Component) {
+  _inherits$2(HashRouter, _React$Component);
+
+  function HashRouter() {
+    var _temp, _this, _ret;
+
+    _classCallCheck$2(this, HashRouter);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn$2(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = createHistory$1(_this.props), _temp), _possibleConstructorReturn$2(_this, _ret);
+  }
+
+  HashRouter.prototype.componentWillMount = function componentWillMount() {
+    warning_1$2(!this.props.history, '<HashRouter> ignores the history prop. To use a custom history, ' + 'use `import { Router }` instead of `import { HashRouter as Router }`.');
+  };
+
+  HashRouter.prototype.render = function render() {
+    return react.createElement(Router, { history: this.history, children: this.props.children });
+  };
+
+  return HashRouter;
+}(react.Component);
+
+HashRouter.propTypes = {
+  basename: propTypes.string,
+  getUserConfirmation: propTypes.func,
+  hashType: propTypes.oneOf(['hashbang', 'noslash', 'slash']),
+  children: propTypes.node
+};
+
+var _extends$1 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$3(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$3(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var isModifiedEvent = function isModifiedEvent(event) {
+  return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+};
+
+/**
+ * The public API for rendering a history-aware <a>.
+ */
+
+var Link = function (_React$Component) {
+  _inherits$3(Link, _React$Component);
+
+  function Link() {
+    var _temp, _this, _ret;
+
+    _classCallCheck$3(this, Link);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn$3(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.handleClick = function (event) {
+      if (_this.props.onClick) _this.props.onClick(event);
+
+      if (!event.defaultPrevented && // onClick prevented default
+      event.button === 0 && // ignore right clicks
+      !_this.props.target && // let browser handle "target=_blank" etc.
+      !isModifiedEvent(event) // ignore clicks with modifier keys
+      ) {
+          event.preventDefault();
+
+          var history = _this.context.router.history;
+          var _this$props = _this.props,
+              replace = _this$props.replace,
+              to = _this$props.to;
+
+
+          if (replace) {
+            history.replace(to);
+          } else {
+            history.push(to);
+          }
+        }
+    }, _temp), _possibleConstructorReturn$3(_this, _ret);
+  }
+
+  Link.prototype.render = function render() {
+    var _props = this.props,
+        replace = _props.replace,
+        to = _props.to,
+        innerRef = _props.innerRef,
+        props = _objectWithoutProperties(_props, ['replace', 'to', 'innerRef']); // eslint-disable-line no-unused-vars
+
+    invariant_1$2(this.context.router, 'You should not use <Link> outside a <Router>');
+
+    var href = this.context.router.history.createHref(typeof to === 'string' ? { pathname: to } : to);
+
+    return react.createElement('a', _extends$1({}, props, { onClick: this.handleClick, href: href, ref: innerRef }));
+  };
+
+  return Link;
+}(react.Component);
+
+Link.propTypes = {
+  onClick: propTypes.func,
+  target: propTypes.string,
+  replace: propTypes.bool,
+  to: propTypes.oneOfType([propTypes.string, propTypes.object]).isRequired,
+  innerRef: propTypes.oneOfType([propTypes.string, propTypes.func])
+};
+Link.defaultProps = {
+  replace: false
+};
+Link.contextTypes = {
+  router: propTypes.shape({
+    history: propTypes.shape({
+      push: propTypes.func.isRequired,
+      replace: propTypes.func.isRequired,
+      createHref: propTypes.func.isRequired
+    }).isRequired
+  }).isRequired
+};
+
+var createMemoryHistory_1 = createCommonjsModule(function (module, exports) {
+exports.__esModule = true;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
+
+var _warning2 = _interopRequireDefault(warning_1$2);
+
+
+
+
+
+
+
+var _createTransitionManager2 = _interopRequireDefault(createTransitionManager_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var clamp = function clamp(n, lowerBound, upperBound) {
+  return Math.min(Math.max(n, lowerBound), upperBound);
+};
+
+/**
+ * Creates a history object that stores locations in memory.
+ */
+var createMemoryHistory = function createMemoryHistory() {
+  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var getUserConfirmation = props.getUserConfirmation,
+      _props$initialEntries = props.initialEntries,
+      initialEntries = _props$initialEntries === undefined ? ['/'] : _props$initialEntries,
+      _props$initialIndex = props.initialIndex,
+      initialIndex = _props$initialIndex === undefined ? 0 : _props$initialIndex,
+      _props$keyLength = props.keyLength,
+      keyLength = _props$keyLength === undefined ? 6 : _props$keyLength;
+
+
+  var transitionManager = (0, _createTransitionManager2.default)();
+
+  var setState = function setState(nextState) {
+    _extends(history, nextState);
+
+    history.length = history.entries.length;
+
+    transitionManager.notifyListeners(history.location, history.action);
+  };
+
+  var createKey = function createKey() {
+    return Math.random().toString(36).substr(2, keyLength);
+  };
+
+  var index = clamp(initialIndex, 0, initialEntries.length - 1);
+  var entries = initialEntries.map(function (entry) {
+    return typeof entry === 'string' ? (0, LocationUtils.createLocation)(entry, undefined, createKey()) : (0, LocationUtils.createLocation)(entry, undefined, entry.key || createKey());
+  });
+
+  // Public interface
+
+  var createHref = PathUtils.createPath;
+
+  var push = function push(path, state) {
+    (0, _warning2.default)(!((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path.state !== undefined && state !== undefined), 'You should avoid providing a 2nd state argument to push when the 1st ' + 'argument is a location-like object that already has state; it is ignored');
+
+    var action = 'PUSH';
+    var location = (0, LocationUtils.createLocation)(path, state, createKey(), history.location);
+
+    transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+      if (!ok) return;
+
+      var prevIndex = history.index;
+      var nextIndex = prevIndex + 1;
+
+      var nextEntries = history.entries.slice(0);
+      if (nextEntries.length > nextIndex) {
+        nextEntries.splice(nextIndex, nextEntries.length - nextIndex, location);
+      } else {
+        nextEntries.push(location);
+      }
+
+      setState({
+        action: action,
+        location: location,
+        index: nextIndex,
+        entries: nextEntries
+      });
+    });
+  };
+
+  var replace = function replace(path, state) {
+    (0, _warning2.default)(!((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path.state !== undefined && state !== undefined), 'You should avoid providing a 2nd state argument to replace when the 1st ' + 'argument is a location-like object that already has state; it is ignored');
+
+    var action = 'REPLACE';
+    var location = (0, LocationUtils.createLocation)(path, state, createKey(), history.location);
+
+    transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+      if (!ok) return;
+
+      history.entries[history.index] = location;
+
+      setState({ action: action, location: location });
+    });
+  };
+
+  var go = function go(n) {
+    var nextIndex = clamp(history.index + n, 0, history.entries.length - 1);
+
+    var action = 'POP';
+    var location = history.entries[nextIndex];
+
+    transitionManager.confirmTransitionTo(location, action, getUserConfirmation, function (ok) {
+      if (ok) {
+        setState({
+          action: action,
+          location: location,
+          index: nextIndex
+        });
+      } else {
+        // Mimic the behavior of DOM histories by
+        // causing a render after a cancelled POP.
+        setState();
+      }
+    });
+  };
+
+  var goBack = function goBack() {
+    return go(-1);
+  };
+
+  var goForward = function goForward() {
+    return go(1);
+  };
+
+  var canGo = function canGo(n) {
+    var nextIndex = history.index + n;
+    return nextIndex >= 0 && nextIndex < history.entries.length;
+  };
+
+  var block = function block() {
+    var prompt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    return transitionManager.setPrompt(prompt);
+  };
+
+  var listen = function listen(listener) {
+    return transitionManager.appendListener(listener);
+  };
+
+  var history = {
+    length: entries.length,
+    action: 'POP',
+    location: entries[index],
+    index: index,
+    entries: entries,
+    createHref: createHref,
+    push: push,
+    replace: replace,
+    go: go,
+    goBack: goBack,
+    goForward: goForward,
+    canGo: canGo,
+    block: block,
+    listen: listen
+  };
+
+  return history;
+};
+
+exports.default = createMemoryHistory;
+});
+
+var createHistory$2 = unwrapExports(createMemoryHistory_1);
+
+function _classCallCheck$4(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$4(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * The public API for a <Router> that stores location in memory.
+ */
+
+var MemoryRouter = function (_React$Component) {
+  _inherits$4(MemoryRouter, _React$Component);
+
+  function MemoryRouter() {
+    var _temp, _this, _ret;
+
+    _classCallCheck$4(this, MemoryRouter);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn$4(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = createHistory$2(_this.props), _temp), _possibleConstructorReturn$4(_this, _ret);
+  }
+
+  MemoryRouter.prototype.componentWillMount = function componentWillMount() {
+    warning_1$2(!this.props.history, '<MemoryRouter> ignores the history prop. To use a custom history, ' + 'use `import { Router }` instead of `import { MemoryRouter as Router }`.');
+  };
+
+  MemoryRouter.prototype.render = function render() {
+    return react.createElement(Router, { history: this.history, children: this.props.children });
+  };
+
+  return MemoryRouter;
+}(react.Component);
+
+MemoryRouter.propTypes = {
+  initialEntries: propTypes.array,
+  initialIndex: propTypes.number,
+  getUserConfirmation: propTypes.func,
+  keyLength: propTypes.number,
+  children: propTypes.node
+};
+
+// Written in this round about way for babel-transform-imports
+
+var isarray = Array.isArray || function (arr) {
+  return Object.prototype.toString.call(arr) == '[object Array]';
+};
+
+/**
+ * Expose `pathToRegexp`.
+ */
+var pathToRegexp_1 = pathToRegexp;
+var parse_1 = parse;
+var compile_1 = compile;
+var tokensToFunction_1 = tokensToFunction;
+var tokensToRegExp_1 = tokensToRegExp;
+
+/**
+ * The main path matching regexp utility.
+ *
+ * @type {RegExp}
+ */
+var PATH_REGEXP = new RegExp([
+  // Match escaped characters that would otherwise appear in future matches.
+  // This allows the user to escape special characters that won't transform.
+  '(\\\\.)',
+  // Match Express-style parameters and un-named parameters with a prefix
+  // and optional suffixes. Matches appear as:
+  //
+  // "/:test(\\d+)?" => ["/", "test", "\d+", undefined, "?", undefined]
+  // "/route(\\d+)"  => [undefined, undefined, undefined, "\d+", undefined, undefined]
+  // "/*"            => ["/", undefined, undefined, undefined, undefined, "*"]
+  '([\\/.])?(?:(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?|(\\*))'
+].join('|'), 'g');
+
+/**
+ * Parse a string for the raw tokens.
+ *
+ * @param  {string}  str
+ * @param  {Object=} options
+ * @return {!Array}
+ */
+function parse (str, options) {
+  var tokens = [];
+  var key = 0;
+  var index = 0;
+  var path = '';
+  var defaultDelimiter = options && options.delimiter || '/';
+  var res;
+
+  while ((res = PATH_REGEXP.exec(str)) != null) {
+    var m = res[0];
+    var escaped = res[1];
+    var offset = res.index;
+    path += str.slice(index, offset);
+    index = offset + m.length;
+
+    // Ignore already escaped sequences.
+    if (escaped) {
+      path += escaped[1];
+      continue
+    }
+
+    var next = str[index];
+    var prefix = res[2];
+    var name = res[3];
+    var capture = res[4];
+    var group = res[5];
+    var modifier = res[6];
+    var asterisk = res[7];
+
+    // Push the current path onto the tokens.
+    if (path) {
+      tokens.push(path);
+      path = '';
+    }
+
+    var partial = prefix != null && next != null && next !== prefix;
+    var repeat = modifier === '+' || modifier === '*';
+    var optional = modifier === '?' || modifier === '*';
+    var delimiter = res[2] || defaultDelimiter;
+    var pattern = capture || group;
+
+    tokens.push({
+      name: name || key++,
+      prefix: prefix || '',
+      delimiter: delimiter,
+      optional: optional,
+      repeat: repeat,
+      partial: partial,
+      asterisk: !!asterisk,
+      pattern: pattern ? escapeGroup(pattern) : (asterisk ? '.*' : '[^' + escapeString(delimiter) + ']+?')
+    });
+  }
+
+  // Match any characters still remaining.
+  if (index < str.length) {
+    path += str.substr(index);
+  }
+
+  // If the path exists, push it onto the end.
+  if (path) {
+    tokens.push(path);
+  }
+
+  return tokens
+}
+
+/**
+ * Compile a string to a template function for the path.
+ *
+ * @param  {string}             str
+ * @param  {Object=}            options
+ * @return {!function(Object=, Object=)}
+ */
+function compile (str, options) {
+  return tokensToFunction(parse(str, options))
+}
+
+/**
+ * Prettier encoding of URI path segments.
+ *
+ * @param  {string}
+ * @return {string}
+ */
+function encodeURIComponentPretty (str) {
+  return encodeURI(str).replace(/[\/?#]/g, function (c) {
+    return '%' + c.charCodeAt(0).toString(16).toUpperCase()
+  })
+}
+
+/**
+ * Encode the asterisk parameter. Similar to `pretty`, but allows slashes.
+ *
+ * @param  {string}
+ * @return {string}
+ */
+function encodeAsterisk (str) {
+  return encodeURI(str).replace(/[?#]/g, function (c) {
+    return '%' + c.charCodeAt(0).toString(16).toUpperCase()
+  })
+}
+
+/**
+ * Expose a method for transforming tokens into the path function.
+ */
+function tokensToFunction (tokens) {
+  // Compile all the tokens into regexps.
+  var matches = new Array(tokens.length);
+
+  // Compile all the patterns before compilation.
+  for (var i = 0; i < tokens.length; i++) {
+    if (typeof tokens[i] === 'object') {
+      matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$');
+    }
+  }
+
+  return function (obj, opts) {
+    var path = '';
+    var data = obj || {};
+    var options = opts || {};
+    var encode = options.pretty ? encodeURIComponentPretty : encodeURIComponent;
+
+    for (var i = 0; i < tokens.length; i++) {
+      var token = tokens[i];
+
+      if (typeof token === 'string') {
+        path += token;
+
+        continue
+      }
+
+      var value = data[token.name];
+      var segment;
+
+      if (value == null) {
+        if (token.optional) {
+          // Prepend partial segment prefixes.
+          if (token.partial) {
+            path += token.prefix;
+          }
+
+          continue
+        } else {
+          throw new TypeError('Expected "' + token.name + '" to be defined')
+        }
+      }
+
+      if (isarray(value)) {
+        if (!token.repeat) {
+          throw new TypeError('Expected "' + token.name + '" to not repeat, but received `' + JSON.stringify(value) + '`')
+        }
+
+        if (value.length === 0) {
+          if (token.optional) {
+            continue
+          } else {
+            throw new TypeError('Expected "' + token.name + '" to not be empty')
+          }
+        }
+
+        for (var j = 0; j < value.length; j++) {
+          segment = encode(value[j]);
+
+          if (!matches[i].test(segment)) {
+            throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '", but received `' + JSON.stringify(segment) + '`')
+          }
+
+          path += (j === 0 ? token.prefix : token.delimiter) + segment;
+        }
+
+        continue
+      }
+
+      segment = token.asterisk ? encodeAsterisk(value) : encode(value);
+
+      if (!matches[i].test(segment)) {
+        throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but received "' + segment + '"')
+      }
+
+      path += token.prefix + segment;
+    }
+
+    return path
+  }
+}
+
+/**
+ * Escape a regular expression string.
+ *
+ * @param  {string} str
+ * @return {string}
+ */
+function escapeString (str) {
+  return str.replace(/([.+*?=^!:${}()[\]|\/\\])/g, '\\$1')
+}
+
+/**
+ * Escape the capturing group by escaping special characters and meaning.
+ *
+ * @param  {string} group
+ * @return {string}
+ */
+function escapeGroup (group) {
+  return group.replace(/([=!:$\/()])/g, '\\$1')
+}
+
+/**
+ * Attach the keys as a property of the regexp.
+ *
+ * @param  {!RegExp} re
+ * @param  {Array}   keys
+ * @return {!RegExp}
+ */
+function attachKeys (re, keys) {
+  re.keys = keys;
+  return re
+}
+
+/**
+ * Get the flags for a regexp from the options.
+ *
+ * @param  {Object} options
+ * @return {string}
+ */
+function flags (options) {
+  return options.sensitive ? '' : 'i'
+}
+
+/**
+ * Pull out keys from a regexp.
+ *
+ * @param  {!RegExp} path
+ * @param  {!Array}  keys
+ * @return {!RegExp}
+ */
+function regexpToRegexp (path, keys) {
+  // Use a negative lookahead to match only capturing groups.
+  var groups = path.source.match(/\((?!\?)/g);
+
+  if (groups) {
+    for (var i = 0; i < groups.length; i++) {
+      keys.push({
+        name: i,
+        prefix: null,
+        delimiter: null,
+        optional: false,
+        repeat: false,
+        partial: false,
+        asterisk: false,
+        pattern: null
+      });
+    }
+  }
+
+  return attachKeys(path, keys)
+}
+
+/**
+ * Transform an array into a regexp.
+ *
+ * @param  {!Array}  path
+ * @param  {Array}   keys
+ * @param  {!Object} options
+ * @return {!RegExp}
+ */
+function arrayToRegexp (path, keys, options) {
+  var parts = [];
+
+  for (var i = 0; i < path.length; i++) {
+    parts.push(pathToRegexp(path[i], keys, options).source);
+  }
+
+  var regexp = new RegExp('(?:' + parts.join('|') + ')', flags(options));
+
+  return attachKeys(regexp, keys)
+}
+
+/**
+ * Create a path regexp from string input.
+ *
+ * @param  {string}  path
+ * @param  {!Array}  keys
+ * @param  {!Object} options
+ * @return {!RegExp}
+ */
+function stringToRegexp (path, keys, options) {
+  return tokensToRegExp(parse(path, options), keys, options)
+}
+
+/**
+ * Expose a function for taking tokens and returning a RegExp.
+ *
+ * @param  {!Array}          tokens
+ * @param  {(Array|Object)=} keys
+ * @param  {Object=}         options
+ * @return {!RegExp}
+ */
+function tokensToRegExp (tokens, keys, options) {
+  if (!isarray(keys)) {
+    options = /** @type {!Object} */ (keys || options);
+    keys = [];
+  }
+
+  options = options || {};
+
+  var strict = options.strict;
+  var end = options.end !== false;
+  var route = '';
+
+  // Iterate over the tokens and create our regexp string.
+  for (var i = 0; i < tokens.length; i++) {
+    var token = tokens[i];
+
+    if (typeof token === 'string') {
+      route += escapeString(token);
+    } else {
+      var prefix = escapeString(token.prefix);
+      var capture = '(?:' + token.pattern + ')';
+
+      keys.push(token);
+
+      if (token.repeat) {
+        capture += '(?:' + prefix + capture + ')*';
+      }
+
+      if (token.optional) {
+        if (!token.partial) {
+          capture = '(?:' + prefix + '(' + capture + '))?';
+        } else {
+          capture = prefix + '(' + capture + ')?';
+        }
+      } else {
+        capture = prefix + '(' + capture + ')';
+      }
+
+      route += capture;
+    }
+  }
+
+  var delimiter = escapeString(options.delimiter || '/');
+  var endsWithDelimiter = route.slice(-delimiter.length) === delimiter;
+
+  // In non-strict mode we allow a slash at the end of match. If the path to
+  // match already ends with a slash, we remove it for consistency. The slash
+  // is valid at the end of a path match, not in the middle. This is important
+  // in non-ending mode, where "/test/" shouldn't match "/test//route".
+  if (!strict) {
+    route = (endsWithDelimiter ? route.slice(0, -delimiter.length) : route) + '(?:' + delimiter + '(?=$))?';
+  }
+
+  if (end) {
+    route += '$';
+  } else {
+    // In non-ending mode, we need the capturing groups to match as much as
+    // possible by using a positive lookahead to the end or next path segment.
+    route += strict && endsWithDelimiter ? '' : '(?=' + delimiter + '|$)';
+  }
+
+  return attachKeys(new RegExp('^' + route, flags(options)), keys)
+}
+
+/**
+ * Normalize the given path string, returning a regular expression.
+ *
+ * An empty array can be passed in for the keys, which will hold the
+ * placeholder key descriptions. For example, using `/user/:id`, `keys` will
+ * contain `[{ name: 'id', delimiter: '/', optional: false, repeat: false }]`.
+ *
+ * @param  {(string|RegExp|Array)} path
+ * @param  {(Array|Object)=}       keys
+ * @param  {Object=}               options
+ * @return {!RegExp}
+ */
+function pathToRegexp (path, keys, options) {
+  if (!isarray(keys)) {
+    options = /** @type {!Object} */ (keys || options);
+    keys = [];
+  }
+
+  options = options || {};
+
+  if (path instanceof RegExp) {
+    return regexpToRegexp(path, /** @type {!Array} */ (keys))
+  }
+
+  if (isarray(path)) {
+    return arrayToRegexp(/** @type {!Array} */ (path), /** @type {!Array} */ (keys), options)
+  }
+
+  return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
+}
+
+pathToRegexp_1.parse = parse_1;
+pathToRegexp_1.compile = compile_1;
+pathToRegexp_1.tokensToFunction = tokensToFunction_1;
+pathToRegexp_1.tokensToRegExp = tokensToRegExp_1;
+
+var patternCache = {};
+var cacheLimit = 10000;
+var cacheCount = 0;
+
+var compilePath = function compilePath(pattern, options) {
+  var cacheKey = '' + options.end + options.strict + options.sensitive;
+  var cache = patternCache[cacheKey] || (patternCache[cacheKey] = {});
+
+  if (cache[pattern]) return cache[pattern];
+
+  var keys = [];
+  var re = pathToRegexp_1(pattern, keys, options);
+  var compiledPattern = { re: re, keys: keys };
+
+  if (cacheCount < cacheLimit) {
+    cache[pattern] = compiledPattern;
+    cacheCount++;
+  }
+
+  return compiledPattern;
+};
+
+/**
+ * Public API for matching a URL pathname to a path pattern.
+ */
+var matchPath = function matchPath(pathname) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (typeof options === 'string') options = { path: options };
+
+  var _options = options,
+      _options$path = _options.path,
+      path = _options$path === undefined ? '/' : _options$path,
+      _options$exact = _options.exact,
+      exact = _options$exact === undefined ? false : _options$exact,
+      _options$strict = _options.strict,
+      strict = _options$strict === undefined ? false : _options$strict,
+      _options$sensitive = _options.sensitive,
+      sensitive = _options$sensitive === undefined ? false : _options$sensitive;
+
+  var _compilePath = compilePath(path, { end: exact, strict: strict, sensitive: sensitive }),
+      re = _compilePath.re,
+      keys = _compilePath.keys;
+
+  var match = re.exec(pathname);
+
+  if (!match) return null;
+
+  var url = match[0],
+      values = match.slice(1);
+
+  var isExact = pathname === url;
+
+  if (exact && !isExact) return null;
+
+  return {
+    path: path, // the path pattern used to match
+    url: path === '/' && url === '' ? '/' : url, // the matched portion of the URL
+    isExact: isExact, // whether or not we matched exactly
+    params: keys.reduce(function (memo, key, index) {
+      memo[key.name] = values[index];
+      return memo;
+    }, {})
+  };
+};
+
+var _extends$2 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _classCallCheck$5(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$5(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$5(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var isEmptyChildren = function isEmptyChildren(children) {
+  return react.Children.count(children) === 0;
+};
+
+/**
+ * The public API for matching a single path and rendering.
+ */
+
+var Route = function (_React$Component) {
+  _inherits$5(Route, _React$Component);
+
+  function Route() {
+    var _temp, _this, _ret;
+
+    _classCallCheck$5(this, Route);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn$5(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
+      match: _this.computeMatch(_this.props, _this.context.router)
+    }, _temp), _possibleConstructorReturn$5(_this, _ret);
+  }
+
+  Route.prototype.getChildContext = function getChildContext() {
+    return {
+      router: _extends$2({}, this.context.router, {
+        route: {
+          location: this.props.location || this.context.router.route.location,
+          match: this.state.match
+        }
+      })
+    };
+  };
+
+  Route.prototype.computeMatch = function computeMatch(_ref, router) {
+    var computedMatch = _ref.computedMatch,
+        location = _ref.location,
+        path = _ref.path,
+        strict = _ref.strict,
+        exact = _ref.exact,
+        sensitive = _ref.sensitive;
+
+    if (computedMatch) return computedMatch; // <Switch> already computed the match for us
+
+    invariant_1$2(router, 'You should not use <Route> or withRouter() outside a <Router>');
+
+    var route = router.route;
+
+    var pathname = (location || route.location).pathname;
+
+    return path ? matchPath(pathname, { path: path, strict: strict, exact: exact, sensitive: sensitive }) : route.match;
+  };
+
+  Route.prototype.componentWillMount = function componentWillMount() {
+    warning_1$2(!(this.props.component && this.props.render), 'You should not use <Route component> and <Route render> in the same route; <Route render> will be ignored');
+
+    warning_1$2(!(this.props.component && this.props.children && !isEmptyChildren(this.props.children)), 'You should not use <Route component> and <Route children> in the same route; <Route children> will be ignored');
+
+    warning_1$2(!(this.props.render && this.props.children && !isEmptyChildren(this.props.children)), 'You should not use <Route render> and <Route children> in the same route; <Route children> will be ignored');
+  };
+
+  Route.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps, nextContext) {
+    warning_1$2(!(nextProps.location && !this.props.location), '<Route> elements should not change from uncontrolled to controlled (or vice versa). You initially used no "location" prop and then provided one on a subsequent render.');
+
+    warning_1$2(!(!nextProps.location && this.props.location), '<Route> elements should not change from controlled to uncontrolled (or vice versa). You provided a "location" prop initially but omitted it on a subsequent render.');
+
+    this.setState({
+      match: this.computeMatch(nextProps, nextContext.router)
+    });
+  };
+
+  Route.prototype.render = function render() {
+    var match = this.state.match;
+    var _props = this.props,
+        children = _props.children,
+        component = _props.component,
+        render = _props.render;
+    var _context$router = this.context.router,
+        history = _context$router.history,
+        route = _context$router.route,
+        staticContext = _context$router.staticContext;
+
+    var location = this.props.location || route.location;
+    var props = { match: match, location: location, history: history, staticContext: staticContext };
+
+    return component ? // component prop gets first priority, only called if there's a match
+    match ? react.createElement(component, props) : null : render ? // render prop is next, only called if there's a match
+    match ? render(props) : null : children ? // children come last, always called
+    typeof children === 'function' ? children(props) : !isEmptyChildren(children) ? react.Children.only(children) : null : null;
+  };
+
+  return Route;
+}(react.Component);
+
+Route.propTypes = {
+  computedMatch: propTypes.object, // private, from <Switch>
+  path: propTypes.string,
+  exact: propTypes.bool,
+  strict: propTypes.bool,
+  sensitive: propTypes.bool,
+  component: propTypes.func,
+  render: propTypes.func,
+  children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+  location: propTypes.object
+};
+Route.contextTypes = {
+  router: propTypes.shape({
+    history: propTypes.object.isRequired,
+    route: propTypes.object.isRequired,
+    staticContext: propTypes.object
+  })
+};
+Route.childContextTypes = {
+  router: propTypes.object.isRequired
+};
+
+// Written in this round about way for babel-transform-imports
+
+var _extends$3 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function _objectWithoutProperties$1(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+/**
+ * A <Link> wrapper that knows if it's "active" or not.
+ */
+var NavLink = function NavLink(_ref) {
+  var to = _ref.to,
+      exact = _ref.exact,
+      strict = _ref.strict,
+      location = _ref.location,
+      activeClassName = _ref.activeClassName,
+      className = _ref.className,
+      activeStyle = _ref.activeStyle,
+      style = _ref.style,
+      getIsActive = _ref.isActive,
+      ariaCurrent = _ref.ariaCurrent,
+      rest = _objectWithoutProperties$1(_ref, ['to', 'exact', 'strict', 'location', 'activeClassName', 'className', 'activeStyle', 'style', 'isActive', 'ariaCurrent']);
+
+  return react.createElement(Route, {
+    path: (typeof to === 'undefined' ? 'undefined' : _typeof$1(to)) === 'object' ? to.pathname : to,
+    exact: exact,
+    strict: strict,
+    location: location,
+    children: function children(_ref2) {
+      var location = _ref2.location,
+          match = _ref2.match;
+
+      var isActive = !!(getIsActive ? getIsActive(match, location) : match);
+
+      return react.createElement(Link, _extends$3({
+        to: to,
+        className: isActive ? [className, activeClassName].filter(function (i) {
+          return i;
+        }).join(' ') : className,
+        style: isActive ? _extends$3({}, style, activeStyle) : style,
+        'aria-current': isActive && ariaCurrent
+      }, rest));
+    }
+  });
+};
+
+NavLink.propTypes = {
+  to: Link.propTypes.to,
+  exact: propTypes.bool,
+  strict: propTypes.bool,
+  location: propTypes.object,
+  activeClassName: propTypes.string,
+  className: propTypes.string,
+  activeStyle: propTypes.object,
+  style: propTypes.object,
+  isActive: propTypes.func,
+  ariaCurrent: propTypes.oneOf(['page', 'step', 'location', 'true'])
+};
+
+NavLink.defaultProps = {
+  activeClassName: 'active',
+  ariaCurrent: 'true'
+};
+
+function _classCallCheck$6(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$6(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$6(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * The public API for prompting the user before navigating away
+ * from a screen with a component.
+ */
+
+var Prompt = function (_React$Component) {
+  _inherits$6(Prompt, _React$Component);
+
+  function Prompt() {
+    _classCallCheck$6(this, Prompt);
+
+    return _possibleConstructorReturn$6(this, _React$Component.apply(this, arguments));
+  }
+
+  Prompt.prototype.enable = function enable(message) {
+    if (this.unblock) this.unblock();
+
+    this.unblock = this.context.router.history.block(message);
+  };
+
+  Prompt.prototype.disable = function disable() {
+    if (this.unblock) {
+      this.unblock();
+      this.unblock = null;
+    }
+  };
+
+  Prompt.prototype.componentWillMount = function componentWillMount() {
+    invariant_1$2(this.context.router, 'You should not use <Prompt> outside a <Router>');
+
+    if (this.props.when) this.enable(this.props.message);
+  };
+
+  Prompt.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+    if (nextProps.when) {
+      if (!this.props.when || this.props.message !== nextProps.message) this.enable(nextProps.message);
+    } else {
+      this.disable();
+    }
+  };
+
+  Prompt.prototype.componentWillUnmount = function componentWillUnmount() {
+    this.disable();
+  };
+
+  Prompt.prototype.render = function render() {
+    return null;
+  };
+
+  return Prompt;
+}(react.Component);
+
+Prompt.propTypes = {
+  when: propTypes.bool,
+  message: propTypes.oneOfType([propTypes.func, propTypes.string]).isRequired
+};
+Prompt.defaultProps = {
+  when: true
+};
+Prompt.contextTypes = {
+  router: propTypes.shape({
+    history: propTypes.shape({
+      block: propTypes.func.isRequired
+    }).isRequired
+  }).isRequired
+};
+
+// Written in this round about way for babel-transform-imports
+
+var parsePath = function parsePath(path) {
+  var pathname = path || '/';
+  var search = '';
+  var hash = '';
+
+  var hashIndex = pathname.indexOf('#');
+  if (hashIndex !== -1) {
+    hash = pathname.substr(hashIndex);
+    pathname = pathname.substr(0, hashIndex);
+  }
+
+  var searchIndex = pathname.indexOf('?');
+  if (searchIndex !== -1) {
+    search = pathname.substr(searchIndex);
+    pathname = pathname.substr(0, searchIndex);
+  }
+
+  return {
+    pathname: pathname,
+    search: search === '?' ? '' : search,
+    hash: hash === '#' ? '' : hash
+  };
+};
+
+var _extends$4 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var createLocation = function createLocation(path, state, key, currentLocation) {
+  var location = void 0;
+  if (typeof path === 'string') {
+    // Two-arg form: push(path, state)
+    location = parsePath(path);
+    location.state = state;
+  } else {
+    // One-arg form: push(location)
+    location = _extends$4({}, path);
+
+    if (location.pathname === undefined) location.pathname = '';
+
+    if (location.search) {
+      if (location.search.charAt(0) !== '?') location.search = '?' + location.search;
+    } else {
+      location.search = '';
+    }
+
+    if (location.hash) {
+      if (location.hash.charAt(0) !== '#') location.hash = '#' + location.hash;
+    } else {
+      location.hash = '';
+    }
+
+    if (state !== undefined && location.state === undefined) location.state = state;
+  }
+
+  try {
+    location.pathname = decodeURI(location.pathname);
+  } catch (e) {
+    if (e instanceof URIError) {
+      throw new URIError('Pathname "' + location.pathname + '" could not be decoded. ' + 'This is likely caused by an invalid percent-encoding.');
+    } else {
+      throw e;
+    }
+  }
+
+  if (key) location.key = key;
+
+  if (currentLocation) {
+    // Resolve incomplete/relative pathname relative to current location.
+    if (!location.pathname) {
+      location.pathname = currentLocation.pathname;
+    } else if (location.pathname.charAt(0) !== '/') {
+      location.pathname = resolvePathname(location.pathname, currentLocation.pathname);
+    }
+  } else {
+    // When there is no prior location and pathname is empty, set it to /
+    if (!location.pathname) {
+      location.pathname = '/';
+    }
+  }
+
+  return location;
+};
+
+var locationsAreEqual = function locationsAreEqual(a, b) {
+  return a.pathname === b.pathname && a.search === b.search && a.hash === b.hash && a.key === b.key && valueEqual(a.state, b.state);
+};
+
+var canUseDOM$1 = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
+
+
+
+
+
+ // eslint-disable-line no-alert
+
+/**
+ * Returns true if the HTML5 history API is supported. Taken from Modernizr.
+ *
+ * https://github.com/Modernizr/Modernizr/blob/master/LICENSE
+ * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/history.js
+ * changed to avoid false negatives for Windows Phones: https://github.com/reactjs/react-router/issues/586
+ */
+
+
+/**
+ * Returns true if browser fires popstate on hash change.
+ * IE10 and IE11 do not.
+ */
+
+
+/**
+ * Returns false if using go(n) with hash history causes a full page reload.
+ */
+
+
+/**
+ * Returns true if a given popstate event is an extraneous WebKit event.
+ * Accounts for the fact that Chrome on iOS fires real popstate events
+ * containing undefined state when pressing the back button.
+ */
+
+function _classCallCheck$7(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$7(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$7(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * The public API for updating the location programmatically
+ * with a component.
+ */
+
+var Redirect = function (_React$Component) {
+  _inherits$7(Redirect, _React$Component);
+
+  function Redirect() {
+    _classCallCheck$7(this, Redirect);
+
+    return _possibleConstructorReturn$7(this, _React$Component.apply(this, arguments));
+  }
+
+  Redirect.prototype.isStatic = function isStatic() {
+    return this.context.router && this.context.router.staticContext;
+  };
+
+  Redirect.prototype.componentWillMount = function componentWillMount() {
+    invariant_1$2(this.context.router, 'You should not use <Redirect> outside a <Router>');
+
+    if (this.isStatic()) this.perform();
+  };
+
+  Redirect.prototype.componentDidMount = function componentDidMount() {
+    if (!this.isStatic()) this.perform();
+  };
+
+  Redirect.prototype.componentDidUpdate = function componentDidUpdate(prevProps) {
+    var prevTo = createLocation(prevProps.to);
+    var nextTo = createLocation(this.props.to);
+
+    if (locationsAreEqual(prevTo, nextTo)) {
+      warning_1$2(false, 'You tried to redirect to the same route you\'re currently on: ' + ('"' + nextTo.pathname + nextTo.search + '"'));
+      return;
+    }
+
+    this.perform();
+  };
+
+  Redirect.prototype.perform = function perform() {
+    var history = this.context.router.history;
+    var _props = this.props,
+        push = _props.push,
+        to = _props.to;
+
+
+    if (push) {
+      history.push(to);
+    } else {
+      history.replace(to);
+    }
+  };
+
+  Redirect.prototype.render = function render() {
+    return null;
+  };
+
+  return Redirect;
+}(react.Component);
+
+Redirect.propTypes = {
+  push: propTypes.bool,
+  from: propTypes.string,
+  to: propTypes.oneOfType([propTypes.string, propTypes.object]).isRequired
+};
+Redirect.defaultProps = {
+  push: false
+};
+Redirect.contextTypes = {
+  router: propTypes.shape({
+    history: propTypes.shape({
+      push: propTypes.func.isRequired,
+      replace: propTypes.func.isRequired
+    }).isRequired,
+    staticContext: propTypes.object
+  }).isRequired
+};
+
+// Written in this round about way for babel-transform-imports
+
+var _extends$8 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties$2(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck$8(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$8(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$8(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var normalizeLocation = function normalizeLocation(object) {
+  var _object$pathname = object.pathname,
+      pathname = _object$pathname === undefined ? '/' : _object$pathname,
+      _object$search = object.search,
+      search = _object$search === undefined ? '' : _object$search,
+      _object$hash = object.hash,
+      hash = _object$hash === undefined ? '' : _object$hash;
+
+
+  return {
+    pathname: pathname,
+    search: search === '?' ? '' : search,
+    hash: hash === '#' ? '' : hash
+  };
+};
+
+var addBasename = function addBasename(basename, location) {
+  if (!basename) return location;
+
+  return _extends$8({}, location, {
+    pathname: PathUtils_1(basename) + location.pathname
+  });
+};
+
+var stripBasename$1 = function stripBasename(basename, location) {
+  if (!basename) return location;
+
+  var base = PathUtils_1(basename);
+
+  if (location.pathname.indexOf(base) !== 0) return location;
+
+  return _extends$8({}, location, {
+    pathname: location.pathname.substr(base.length)
+  });
+};
+
+var createLocation$1 = function createLocation(location) {
+  return typeof location === 'string' ? PathUtils_6(location) : normalizeLocation(location);
+};
+
+var createURL = function createURL(location) {
+  return typeof location === 'string' ? location : PathUtils_7(location);
+};
+
+var staticHandler = function staticHandler(methodName) {
+  return function () {
+    invariant_1$2(false, 'You cannot %s with <StaticRouter>', methodName);
+  };
+};
+
+var noop = function noop() {};
+
+/**
+ * The public top-level API for a "static" <Router>, so-called because it
+ * can't actually change the current location. Instead, it just records
+ * location changes in a context object. Useful mainly in testing and
+ * server-rendering scenarios.
+ */
+
+var StaticRouter = function (_React$Component) {
+  _inherits$8(StaticRouter, _React$Component);
+
+  function StaticRouter() {
+    var _temp, _this, _ret;
+
+    _classCallCheck$8(this, StaticRouter);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn$8(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.createHref = function (path) {
+      return PathUtils_1(_this.props.basename + createURL(path));
+    }, _this.handlePush = function (location) {
+      var _this$props = _this.props,
+          basename = _this$props.basename,
+          context = _this$props.context;
+
+      context.action = 'PUSH';
+      context.location = addBasename(basename, createLocation$1(location));
+      context.url = createURL(context.location);
+    }, _this.handleReplace = function (location) {
+      var _this$props2 = _this.props,
+          basename = _this$props2.basename,
+          context = _this$props2.context;
+
+      context.action = 'REPLACE';
+      context.location = addBasename(basename, createLocation$1(location));
+      context.url = createURL(context.location);
+    }, _this.handleListen = function () {
+      return noop;
+    }, _this.handleBlock = function () {
+      return noop;
+    }, _temp), _possibleConstructorReturn$8(_this, _ret);
+  }
+
+  StaticRouter.prototype.getChildContext = function getChildContext() {
+    return {
+      router: {
+        staticContext: this.props.context
+      }
+    };
+  };
+
+  StaticRouter.prototype.componentWillMount = function componentWillMount() {
+    warning_1$2(!this.props.history, '<StaticRouter> ignores the history prop. To use a custom history, ' + 'use `import { Router }` instead of `import { StaticRouter as Router }`.');
+  };
+
+  StaticRouter.prototype.render = function render() {
+    var _props = this.props,
+        basename = _props.basename,
+        context = _props.context,
+        location = _props.location,
+        props = _objectWithoutProperties$2(_props, ['basename', 'context', 'location']);
+
+    var history = {
+      createHref: this.createHref,
+      action: 'POP',
+      location: stripBasename$1(basename, createLocation$1(location)),
+      push: this.handlePush,
+      replace: this.handleReplace,
+      go: staticHandler('go'),
+      goBack: staticHandler('goBack'),
+      goForward: staticHandler('goForward'),
+      listen: this.handleListen,
+      block: this.handleBlock
+    };
+
+    return react.createElement(Router, _extends$8({}, props, { history: history }));
+  };
+
+  return StaticRouter;
+}(react.Component);
+
+StaticRouter.propTypes = {
+  basename: propTypes.string,
+  context: propTypes.object.isRequired,
+  location: propTypes.oneOfType([propTypes.string, propTypes.object])
+};
+StaticRouter.defaultProps = {
+  basename: '',
+  location: '/'
+};
+StaticRouter.childContextTypes = {
+  router: propTypes.object.isRequired
+};
+
+// Written in this round about way for babel-transform-imports
+
+function _classCallCheck$9(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn$9(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits$9(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * The public API for rendering the first <Route> that matches.
+ */
+
+var Switch = function (_React$Component) {
+  _inherits$9(Switch, _React$Component);
+
+  function Switch() {
+    _classCallCheck$9(this, Switch);
+
+    return _possibleConstructorReturn$9(this, _React$Component.apply(this, arguments));
+  }
+
+  Switch.prototype.componentWillMount = function componentWillMount() {
+    invariant_1$2(this.context.router, 'You should not use <Switch> outside a <Router>');
+  };
+
+  Switch.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+    warning_1$2(!(nextProps.location && !this.props.location), '<Switch> elements should not change from uncontrolled to controlled (or vice versa). You initially used no "location" prop and then provided one on a subsequent render.');
+
+    warning_1$2(!(!nextProps.location && this.props.location), '<Switch> elements should not change from controlled to uncontrolled (or vice versa). You provided a "location" prop initially but omitted it on a subsequent render.');
+  };
+
+  Switch.prototype.render = function render() {
+    var route = this.context.router.route;
+    var children = this.props.children;
+
+    var location = this.props.location || route.location;
+
+    var match = void 0,
+        child = void 0;
+    react.Children.forEach(children, function (element) {
+      if (!react.isValidElement(element)) return;
+
+      var _element$props = element.props,
+          pathProp = _element$props.path,
+          exact = _element$props.exact,
+          strict = _element$props.strict,
+          sensitive = _element$props.sensitive,
+          from = _element$props.from;
+
+      var path = pathProp || from;
+
+      if (match == null) {
+        child = element;
+        match = path ? matchPath(location.pathname, { path: path, exact: exact, strict: strict, sensitive: sensitive }) : route.match;
+      }
+    });
+
+    return match ? react.cloneElement(child, { location: location, computedMatch: match }) : null;
+  };
+
+  return Switch;
+}(react.Component);
+
+Switch.contextTypes = {
+  router: propTypes.shape({
+    route: propTypes.object.isRequired
+  }).isRequired
+};
+Switch.propTypes = {
+  children: propTypes.node,
+  location: propTypes.object
+};
+
+// Written in this round about way for babel-transform-imports
+
+// Written in this round about way for babel-transform-imports
+
+/**
+ * Copyright 2015, Yahoo! Inc.
+ * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
+ */
+
+// Written in this round about way for babel-transform-imports
+
+var css = ".github-corner:hover .octo-arm {\n  animation: octocat-wave 560ms ease-in-out; }\n\n@keyframes octocat-wave {\n  0%, 100% {\n    transform: rotate(0); }\n  20%, 60% {\n    transform: rotate(-25deg); }\n  40%, 80% {\n    transform: rotate(10deg); } }\n\n@media (max-width: 500px) {\n  .github-corner:hover .octo-arm {\n    animation: none; }\n  .github-corner .octo-arm {\n    animation: octocat-wave 560ms ease-in-out; } }\n\n.github-corner {\n  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23); }\n";
+__$$styleInject(css);
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -973,8 +3872,94 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-var requestCheck = window.requestIdleCallback || window.requestAnimationFrame;
-var cancelCheck = window.cancelIdleCallback || window.cancelAnimationFrame;
+var GithubCorner = function (_Component) {
+  inherits(GithubCorner, _Component);
+
+  function GithubCorner() {
+    classCallCheck(this, GithubCorner);
+    return possibleConstructorReturn(this, (GithubCorner.__proto__ || Object.getPrototypeOf(GithubCorner)).apply(this, arguments));
+  }
+
+  createClass(GithubCorner, [{
+    key: 'render',
+    value: function render() {
+      return react.createElement(
+        'div',
+        null,
+        react.createElement(
+          'a',
+          { href: 'https://github.com/YurkaninRyan/react-sentinel', className: 'github-corner', 'aria-label': 'View source on Github' },
+          react.createElement(
+            'svg',
+            {
+              width: '80',
+              height: '80',
+              viewBox: '0 0 250 250',
+              style: {
+                fill: '#2a9d8f', color: '#fff', position: 'absolute', top: 0, border: 0, right: 0
+              },
+              'aria-hidden': 'true'
+            },
+            react.createElement('path', { d: 'M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z' }),
+            react.createElement('path', { d: 'M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2', fill: 'currentColor', style: { transformOrigin: '130px 106px' }, className: 'octo-arm' }),
+            react.createElement('path', { d: 'M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z', fill: 'currentColor', className: 'octo-body' })
+          )
+        )
+      );
+    }
+  }]);
+  return GithubCorner;
+}(react_2);
+
+var css$2 = ".Navbar {\n  width: 100%;\n  display: flex;\n  padding: 8px 74px 8px 8px;\n  align-items: center;\n  background-color: #fdfdfd;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); }\n  .Navbar ul {\n    margin: 0; }\n\n.Navbar__name {\n  font-weight: 700;\n  padding: 0 8px 0 0;\n  margin: 0 8px 0 0;\n  border-right: 1px solid #cecece; }\n\n.Navbar__links {\n  display: flex; }\n\n.Navbar__link {\n  font-size: .8rem;\n  font-weight: 500;\n  text-decoration: underline;\n  color: #F4828C;\n  cursor: pointer;\n  user-select: none;\n  margin: 0 8px 0 0; }\n";
+__$$styleInject(css$2);
+
+var Navbar = function (_Component) {
+  inherits(Navbar, _Component);
+
+  function Navbar() {
+    classCallCheck(this, Navbar);
+    return possibleConstructorReturn(this, (Navbar.__proto__ || Object.getPrototypeOf(Navbar)).apply(this, arguments));
+  }
+
+  createClass(Navbar, [{
+    key: 'render',
+    value: function render() {
+      return react.createElement(
+        'div',
+        { className: 'Navbar' },
+        react.createElement(
+          'div',
+          { className: 'Navbar__name' },
+          'Sentinel'
+        ),
+        react.createElement(
+          'ul',
+          { className: 'Navbar__links' },
+          react.createElement(
+            'li',
+            null,
+            react.createElement(
+              Link,
+              { className: 'Navbar__link', to: '/element-query-example' },
+              'Element Query Example'
+            )
+          ),
+          react.createElement(
+            'li',
+            null,
+            react.createElement(
+              Link,
+              { className: 'Navbar__link', to: '/animation-example' },
+              'Animation Example'
+            )
+          )
+        )
+      );
+    }
+  }]);
+  return Navbar;
+}(react_2);
 
 var Sentinel = function (_Component) {
   inherits(Sentinel, _Component);
@@ -984,14 +3969,15 @@ var Sentinel = function (_Component) {
 
     var _this = possibleConstructorReturn(this, (Sentinel.__proto__ || Object.getPrototypeOf(Sentinel)).call(this));
 
-    _this.state = {};
-
     _this.setLoopingFunctions = function (lowPriority) {
       // Low priority means use requestIdleCallback
       // fallback to requestAnimationFrame
-      _this.requestCheck = lowPriority ? requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
+      var requestCheck = lowPriority ? requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
 
-      _this.cancelCheck = lowPriority ? cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+      var cancelCheck = lowPriority ? cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+
+      _this.requestCheck = requestCheck.bind(window);
+      _this.cancelCheck = cancelCheck.bind(window);
     };
 
     _this.watchPID = null;
@@ -999,14 +3985,22 @@ var Sentinel = function (_Component) {
 
     _this.watch = function () {
       _this.watchPID = window.setTimeout(function () {
-        _this.checkPID = requestCheck(_this.check);
+        _this.checkPID = _this.requestCheck(_this.check);
       }, 0);
+    };
+
+    _this.stop = function () {
+      clearTimeout(_this.watchPID);
+      _this.cancelCheck(_this.checkPID);
+
+      _this.watchPID = null;
+      _this.checkPID = null;
     };
 
     _this.check = function () {
       var observe = _this.props.observe;
 
-      var updates = observe(_this.props);
+      var updates = observe(_this.state);
 
       if (!updates) {
         return _this.watch();
@@ -1030,6 +4024,7 @@ var Sentinel = function (_Component) {
     };
 
     _this.setLoopingFunctions(props.lowPriority);
+    _this.state = props.initial;
     return _this;
   }
 
@@ -1044,17 +4039,14 @@ var Sentinel = function (_Component) {
       if (nextProps.lowPriority === this.props.lowPriority) return;
 
       // Make a clean slate, since we will be changing functions.
-      clearTimeout(this.watchPID);
-      this.cancelCheck(this.checkPID);
-
+      this.stop();
       this.setLoopingFunctions(nextProps.lowPriority);
       this.watch();
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      clearTimeout(this.watchPID);
-      cancelCheck(this.checkPID);
+      this.stop();
     }
   }, {
     key: 'render',
@@ -1068,11 +4060,15 @@ var Sentinel = function (_Component) {
 Sentinel.propTypes = {
   observe: propTypes.func.isRequired,
   render: propTypes.func.isRequired,
-  lowPriority: propTypes.bool
+  lowPriority: propTypes.bool,
+
+  // eslint-disable-next-line react/forbid-prop-types
+  initial: propTypes.object
 };
 
 Sentinel.defaultProps = {
-  lowPriority: false
+  lowPriority: false,
+  initial: {}
 };
 
 var classCallCheck$1 = function (instance, Constructor) {
@@ -1105,7 +4101,7 @@ var createClass$1 = function () {
 
 
 
-var _extends$1 = Object.assign || function (target) {
+var _extends$11 = Object.assign || function (target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i];
 
@@ -1228,7 +4224,7 @@ var Resizer = (function (props) {
     'div',
     {
       className: props.className,
-      style: _extends$1({}, styles.base, styles[props.direction], props.replaceStyles || {}),
+      style: _extends$11({}, styles.base, styles[props.direction], props.replaceStyles || {}),
       onMouseDown: function onMouseDown(e) {
         props.onResizeStart(e, props.direction);
       },
@@ -1254,7 +4250,7 @@ var userSelectAuto = {
   MsUserSelect: 'auto'
 };
 
-var clamp = function clamp(n, min, max) {
+var clamp$1 = function clamp(n, min, max) {
   return Math.max(Math.min(n, max), min);
 };
 var snap = function snap(n, size) {
@@ -1545,11 +4541,11 @@ var Resizable = function (_React$Component) {
         var lockedMaxWidth = Math.min(computedMaxWidth, extraMaxWidth);
         var lockedMinHeight = Math.max(computedMinHeight, extraMinHeight);
         var lockedMaxHeight = Math.min(computedMaxHeight, extraMaxHeight);
-        newWidth = clamp(newWidth, lockedMinWidth, lockedMaxWidth);
-        newHeight = clamp(newHeight, lockedMinHeight, lockedMaxHeight);
+        newWidth = clamp$1(newWidth, lockedMinWidth, lockedMaxWidth);
+        newHeight = clamp$1(newHeight, lockedMinHeight, lockedMaxHeight);
       } else {
-        newWidth = clamp(newWidth, computedMinWidth, computedMaxWidth);
-        newHeight = clamp(newHeight, computedMinHeight, computedMaxHeight);
+        newWidth = clamp$1(newWidth, computedMinWidth, computedMaxWidth);
+        newHeight = clamp$1(newHeight, computedMinHeight, computedMaxHeight);
       }
       if (this.props.grid) {
         newWidth = snap(newWidth, this.props.grid[0]);
@@ -1657,11 +4653,11 @@ var Resizable = function (_React$Component) {
       var userSelect = this.state.isResizing ? userSelectNone : userSelectAuto;
       return react_5(
         'div',
-        _extends$1({
+        _extends$11({
           ref: function ref(c) {
             _this3.resizable = c;
           },
-          style: _extends$1({
+          style: _extends$11({
             position: 'relative'
           }, userSelect, this.props.style, this.sizeStyle, {
             maxWidth: this.props.maxWidth,
@@ -1759,8 +4755,8 @@ Resizable.defaultProps = {
   lockAspectRatioExtraHeight: 0
 };
 
-var css = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px 16px 16px 32px;\n  position: relative; }\n  .DumbCard.is-small {\n    font-size: 20px; }\n  .DumbCard.is-medium {\n    font-size: 28px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 36px;\n    padding: 24px 24px 24px 48px; }\n\n.DumbCard__content {\n  display: flex;\n  flex: 1; }\n\n.DumbCard__side-banner {\n  width: 16px;\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  background-color: #2a9d8f; }\n  .is-large .DumbCard__side-banner {\n    width: 24px; }\n";
-__$$styleInject(css);
+var css$4 = ".DumbCard {\n  background: #fdfdfd;\n  border-radius: 2px;\n  height: 100%;\n  position: relative;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  display: flex;\n  padding: 16px 16px 16px 32px;\n  position: relative; }\n  .DumbCard.is-small {\n    font-size: 20px; }\n  .DumbCard.is-medium {\n    font-size: 28px;\n    font-weight: 500; }\n  .DumbCard.is-large {\n    font-size: 36px;\n    padding: 24px 24px 24px 48px; }\n\n.DumbCard__content {\n  display: flex;\n  flex: 1; }\n\n.DumbCard__side-banner {\n  width: 16px;\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  background-color: #2a9d8f; }\n  .is-large .DumbCard__side-banner {\n    width: 24px; }\n";
+__$$styleInject(css$4);
 
 var DumbCard = function (_Component) {
   inherits(DumbCard, _Component);
@@ -1802,8 +4798,8 @@ DumbCard.defaultProps = {
   size: 'large'
 };
 
-var css$2 = ".Emoji {\n  transform: translateY(10%);\n  display: inline-block; }\n";
-__$$styleInject(css$2);
+var css$6 = ".Emoji {\n  transform: translateY(10%);\n  display: inline-block; }\n";
+__$$styleInject(css$6);
 
 var Emoji = function (_PureComponent) {
   inherits(Emoji, _PureComponent);
@@ -1832,84 +4828,105 @@ Emoji.propTypes = {
   icon: propTypes.string.isRequired
 };
 
-var css$4 = ".ResizeableResponsiveCard {\n  margin: 0 16px 16px 0; }\n\n.ResizeableResponsiveCard__content {\n  display: flex;\n  flex-direction: column;\n  white-space: pre-wrap; }\n\n.ResizeableResponsiveCard__title {\n  font-size: 1em;\n  line-height: 1;\n  margin-bottom: .75em;\n  margin-top: 0;\n  font-weight: 500; }\n\n.ResizeableResponsiveCard__subtitle {\n  font-size: .8em;\n  line-height: 1;\n  margin-bottom: .5em;\n  margin-top: 0;\n  font-style: italic; }\n\n.ResizeableResponsiveCard__tidbit {\n  font-size: .6em;\n  line-height: 1.1;\n  margin-top: .5em; }\n  .ResizeableResponsiveCard__tidbit.is-bold {\n    font-weight: 600; }\n\n.ResizeableResponsiveCard__resizer {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  height: 10%;\n  width: 10%; }\n  .ResizeableResponsiveCard__resizer:before {\n    content: \"\";\n    position: absolute;\n    bottom: 4px;\n    right: 4px;\n    top: 0;\n    left: 0;\n    background-color: white;\n    z-index: 1;\n    pointer-events: none; }\n  .ResizeableResponsiveCard__resizer:after {\n    content: \"\";\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: #dbd5de; }\n";
-__$$styleInject(css$4);
+var css$8 = ".ResizeableResponsiveCard {\n  margin: 0 16px 16px 0; }\n\n.ResizeableResponsiveCard__content {\n  display: flex;\n  flex-direction: column;\n  white-space: pre-wrap; }\n\n.ResizeableResponsiveCard__title {\n  font-size: 1em;\n  line-height: 1;\n  margin-bottom: .75em;\n  margin-top: 0;\n  font-weight: 500; }\n\n.ResizeableResponsiveCard__subtitle {\n  font-size: .8em;\n  line-height: 1;\n  margin-bottom: .5em;\n  margin-top: 0;\n  font-style: italic; }\n\n.ResizeableResponsiveCard__tidbit {\n  font-size: .6em;\n  line-height: 1.1;\n  margin-top: .5em; }\n  .ResizeableResponsiveCard__tidbit.is-bold {\n    font-weight: 600; }\n\n.ResizeableResponsiveCard__resizer {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  height: 10%;\n  width: 10%; }\n  .ResizeableResponsiveCard__resizer:before {\n    content: \"\";\n    position: absolute;\n    bottom: 4px;\n    right: 4px;\n    top: 0;\n    left: 0;\n    background-color: white;\n    z-index: 1;\n    pointer-events: none; }\n  .ResizeableResponsiveCard__resizer:after {\n    content: \"\";\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: #dbd5de; }\n";
+__$$styleInject(css$8);
 
 var LargeContent = function LargeContent(_ref) {
   var width = _ref.width;
-  return [react.createElement(
-    'h1',
-    { className: 'ResizeableResponsiveCard__title' },
-    'Looping and setting props made easy ',
-    react.createElement(Emoji, { icon: '\uD83C\uDF89' })
-  ), react.createElement(
-    'h2',
-    { className: 'ResizeableResponsiveCard__subtitle' },
-    'Current Width: ',
-    width,
-    'px'
-  ), react.createElement(
-    'p',
-    { className: 'ResizeableResponsiveCard__tidbit' },
-    'You can use Sentinel for basically any usecase you would want to use requestAnimationFrame for. Including Element Queries, and even Animations.'
-  ), react.createElement(
-    'p',
-    { className: 'ResizeableResponsiveCard__tidbit is-bold' },
-    'You can drag from the bottom right to make me larger or smaller!'
-  )];
+  return react.createElement(
+    react.Fragment,
+    null,
+    react.createElement(
+      'h1',
+      { className: 'ResizeableResponsiveCard__title' },
+      'Looping and setting props made easy ',
+      react.createElement(Emoji, { icon: '\uD83C\uDF89' })
+    ),
+    react.createElement(
+      'h2',
+      { className: 'ResizeableResponsiveCard__subtitle' },
+      'Current Width: ',
+      width,
+      'px'
+    ),
+    react.createElement(
+      'p',
+      { className: 'ResizeableResponsiveCard__tidbit' },
+      'You can use Sentinel for basically any usecase you would want to use requestAnimationFrame for. Including Element Queries, and even Animations.'
+    ),
+    react.createElement(
+      'p',
+      { className: 'ResizeableResponsiveCard__tidbit is-bold' },
+      'You can drag from the bottom right to make me larger or smaller!'
+    )
+  );
 };
 
 var MediumContent = function MediumContent(_ref2) {
   var width = _ref2.width;
-  return [react.createElement(
-    'h1',
-    { className: 'ResizeableResponsiveCard__title' },
-    'Efficient out of the box ',
-    react.createElement(Emoji, { icon: '\uD83C\uDF89' })
-  ), react.createElement(
-    'h2',
-    { className: 'ResizeableResponsiveCard__subtitle' },
-    'Current Width: ',
-    width,
-    'px'
-  ), react.createElement(
-    'p',
-    { className: 'ResizeableResponsiveCard__tidbit' },
-    'Sentinel will automatically shallow compare what you return, and will only update the wrapped component if something actually changes.'
-  ), react.createElement(
-    'p',
-    { className: 'ResizeableResponsiveCard__tidbit' },
-    'if requestAnimationFrame is too heavy for you, setting the ',
+  return react.createElement(
+    react.Fragment,
+    null,
     react.createElement(
-      'code',
-      null,
-      'lowPriority'
+      'h1',
+      { className: 'ResizeableResponsiveCard__title' },
+      'Efficient out of the box ',
+      react.createElement(Emoji, { icon: '\uD83C\uDF89' })
     ),
-    ' prop will loop using requestIdleCallback!'
-  )];
+    react.createElement(
+      'h2',
+      { className: 'ResizeableResponsiveCard__subtitle' },
+      'Current Width: ',
+      width,
+      'px'
+    ),
+    react.createElement(
+      'p',
+      { className: 'ResizeableResponsiveCard__tidbit' },
+      'Sentinel will automatically shallow compare what you return, and will only update the wrapped component if something actually changes.'
+    ),
+    react.createElement(
+      'p',
+      { className: 'ResizeableResponsiveCard__tidbit' },
+      'if requestAnimationFrame is too heavy for you, setting the ',
+      react.createElement(
+        'code',
+        null,
+        'lowPriority'
+      ),
+      ' prop will loop using requestIdleCallback!'
+    )
+  );
 };
 
 var SmallContent = function SmallContent(_ref3) {
   var width = _ref3.width;
-  return [react.createElement(
-    'h1',
-    { className: 'ResizeableResponsiveCard__title' },
-    'Thats it, just trying to keep it simple here.'
-  ), react.createElement(
-    'h2',
-    { className: 'ResizeableResponsiveCard__subtitle' },
-    'Current Width: ',
-    width,
-    'px'
-  ), react.createElement(
-    'p',
-    { className: 'ResizeableResponsiveCard__tidbit is-bold' },
-    'There are definitely other ways of doing Element Queries and Animations.'
-  ), react.createElement(
-    'p',
-    { className: 'ResizeableResponsiveCard__tidbit' },
-    'I often found myself writing requestAnimationFrame loops and hated it, so I decided to make it easier for myself and share it with all of you'
-  )];
+  return react.createElement(
+    react.Fragment,
+    null,
+    react.createElement(
+      'h1',
+      { className: 'ResizeableResponsiveCard__title' },
+      'Thats it, just trying to keep it simple here.'
+    ),
+    react.createElement(
+      'h2',
+      { className: 'ResizeableResponsiveCard__subtitle' },
+      'Current Width: ',
+      width,
+      'px'
+    ),
+    react.createElement(
+      'p',
+      { className: 'ResizeableResponsiveCard__tidbit is-bold' },
+      'There are definitely other ways of doing Element Queries and Animations.'
+    ),
+    react.createElement(
+      'p',
+      { className: 'ResizeableResponsiveCard__tidbit' },
+      'I often found myself writing requestAnimationFrame loops and hated it, so I decided to make it easier for myself and share it with all of you'
+    )
+  );
 };
 
 var ResizeableResponsiveCard = function (_Component) {
@@ -1950,15 +4967,12 @@ var ResizeableResponsiveCard = function (_Component) {
     }, _this.renderCard = function (_ref5) {
       var size = _ref5.size,
           width = _ref5.width;
-      var children = _this.props.children;
-
       return react.createElement(
         DumbCard,
         { size: size },
         react.createElement(
           'div',
           { className: 'ResizeableResponsiveCard__content' },
-          children,
           size === 'small' && react.createElement(SmallContent, { width: width }),
           size === 'medium' && react.createElement(MediumContent, { width: width }),
           size === 'large' && react.createElement(LargeContent, { width: width })
@@ -1997,7 +5011,6 @@ var ResizeableResponsiveCard = function (_Component) {
 }(react_2);
 
 ResizeableResponsiveCard.propTypes = {
-  children: propTypes.element.isRequired,
   startSize: propTypes.number
 };
 
@@ -2005,22 +5018,20 @@ ResizeableResponsiveCard.defaultProps = {
   startSize: 365
 };
 
-var css$6 = ".App {\n  min-height: 100vh;\n  width: 100vw;\n  background-color: #addcca;\n  color: #444;\n  padding: 24px; }\n\n.App__header {\n  margin-bottom: 24px; }\n\n.App__title {\n  margin-top: 0;\n  font-size: 2rem;\n  line-height: 2.2rem;\n  font-weight: 600; }\n\n.App__tidbit {\n  margin-top: 0;\n  font-size: .8rem; }\n\n.App__content {\n  display: flex;\n  flex-flow: wrap; }\n\n.App__button {\n  font-size: .7rem;\n  padding: .5em 1em;\n  color: #444;\n  border: 1px solid #999;\n  border: transparent;\n  background-color: #E6E6E6;\n  text-decoration: none;\n  border-radius: 2px;\n  cursor: pointer;\n  margin: 8px 8px 8px 0;\n  font-weight: 500; }\n  .App__button:active, .App__button:focus {\n    outline: 0; }\n  .App__button:disabled {\n    pointer-events: none; }\n  .App__button.is-cta {\n    background-color: #F4828C;\n    color: #ffffff; }\n";
-__$$styleInject(css$6);
+LargeContent.propTypes = { width: propTypes.number.isRequired };
+MediumContent.propTypes = { width: propTypes.number.isRequired };
+SmallContent.propTypes = { width: propTypes.number.isRequired };
 
-var css$8 = "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n  box-sizing: border-box; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n";
-__$$styleInject(css$8);
-
-var css$10 = "/*! Typebase.less v0.1.0 | MIT License */\n/* Setup */\nhtml {\n  /* Change default typefaces here */\n  font-family: serif;\n  font-size: 137.5%;\n  -webkit-font-smoothing: antialiased; }\n\n/* Copy & Lists */\np {\n  line-height: 1.5rem;\n  margin-top: 1.5rem;\n  margin-bottom: 0; }\n\nul,\nol {\n  margin-top: 1.5rem;\n  margin-bottom: 1.5rem; }\n\nul li,\nol li {\n  line-height: 1.5rem; }\n\nul ul,\nol ul,\nul ol,\nol ol {\n  margin-top: 0;\n  margin-bottom: 0; }\n\nblockquote {\n  line-height: 1.5rem;\n  margin-top: 1.5rem;\n  margin-bottom: 1.5rem; }\n\n/* Headings */\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  /* Change heading typefaces here */\n  font-family: sans-serif;\n  margin-top: 1.5rem;\n  margin-bottom: 0;\n  line-height: 1.5rem; }\n\nh1 {\n  font-size: 4.242rem;\n  line-height: 4.5rem;\n  margin-top: 3rem; }\n\nh2 {\n  font-size: 2.828rem;\n  line-height: 3rem;\n  margin-top: 3rem; }\n\nh3 {\n  font-size: 1.414rem; }\n\nh4 {\n  font-size: 0.707rem; }\n\nh5 {\n  font-size: 0.4713333333333333rem; }\n\nh6 {\n  font-size: 0.3535rem; }\n\n/* Tables */\ntable {\n  margin-top: 1.5rem;\n  border-spacing: 0px;\n  border-collapse: collapse; }\n\ntable td,\ntable th {\n  padding: 0;\n  line-height: 33px; }\n\n/* Code blocks */\ncode {\n  vertical-align: bottom;\n  font-family: Menlo,Monaco,\"Courier New\",Courier,monospace;\n  background-color: #d3d3d352;\n  color: #e16883;\n  padding: 2px;\n  font-size: .9em; }\n\n/* Leading paragraph text */\n.lead {\n  font-size: 1.414rem; }\n\n/* Hug the block above you */\n.hug {\n  margin-top: 0; }\n";
+var css$10 = ".ElementQueryExample {\n  min-height: 100vh;\n  width: 100vw;\n  padding: 24px; }\n\n.ElementQueryExample__header {\n  margin-bottom: 24px; }\n\n.ElementQueryExample__title {\n  margin-top: 0;\n  font-size: 2rem;\n  line-height: 2.2rem;\n  font-weight: 600;\n  margin-bottom: 8px; }\n\n.ElementQueryExample__tidbit {\n  margin-top: 0;\n  font-size: .8rem;\n  max-width: 30em;\n  margin-bottom: 8px; }\n\n.ElementQueryExample__content {\n  display: flex;\n  flex-flow: wrap; }\n\n.ElementQueryExample__button {\n  font-size: .7rem;\n  padding: .5em 1em;\n  color: #444;\n  border: 1px solid #999;\n  border: transparent;\n  background-color: #E6E6E6;\n  text-decoration: none;\n  border-radius: 2px;\n  cursor: pointer;\n  margin: 8px 8px 8px 0;\n  font-weight: 500; }\n  .ElementQueryExample__button:active, .ElementQueryExample__button:focus {\n    outline: 0; }\n  .ElementQueryExample__button:disabled {\n    pointer-events: none; }\n  .ElementQueryExample__button.is-cta {\n    background-color: #F4828C;\n    color: #ffffff; }\n";
 __$$styleInject(css$10);
 
-var App = function (_Component) {
-  inherits(App, _Component);
+var ElementQueryExample = function (_Component) {
+  inherits(ElementQueryExample, _Component);
 
-  function App() {
-    classCallCheck(this, App);
+  function ElementQueryExample() {
+    classCallCheck(this, ElementQueryExample);
 
-    var _this = possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+    var _this = possibleConstructorReturn(this, (ElementQueryExample.__proto__ || Object.getPrototypeOf(ElementQueryExample)).call(this));
 
     _this.getBodyWidth = function () {
       return { width: document.body.offsetWidth };
@@ -2032,7 +5043,7 @@ var App = function (_Component) {
       var cards = [];
 
       for (var i = 0; i < numberOfCards; i += 1) {
-        cards.push(react.createElement(ResizeableResponsiveCard, null));
+        cards.push(react.createElement(ResizeableResponsiveCard, { key: i }));
       }
 
       return cards;
@@ -2050,45 +5061,45 @@ var App = function (_Component) {
       });
     };
 
-    _this.renderApp = function (_ref) {
+    _this.renderElementQueryExample = function (_ref) {
       var width = _ref.width;
       return react.createElement(
         'div',
-        { className: 'App' },
+        { className: 'ElementQueryExample' },
         react.createElement(
           'div',
-          { className: 'App__header' },
+          { className: 'ElementQueryExample__header' },
           react.createElement(
             'h2',
-            { className: 'App__title' },
-            'React Sentinel'
+            { className: 'ElementQueryExample__title' },
+            'Element Query Example'
           ),
           react.createElement(
             'p',
-            { className: 'App__tidbit' },
-            'With only media queries, you could only work with the fact that your browser window is currently ',
+            { className: 'ElementQueryExample__tidbit' },
+            'Element queries allow you to work based on properties of any given node. With only media queries, you could only work with the fact that your browser window is currently ',
             width,
             'px ',
             react.createElement(Emoji, { icon: '\uD83D\uDE29' })
           ),
           react.createElement(
             'div',
-            { className: 'App__buttons' },
+            { className: 'ElementQueryExample__buttons' },
             react.createElement(
               'button',
-              { className: 'App__button is-cta', onClick: _this.addCard },
+              { className: 'ElementQueryExample__button is-cta', onClick: _this.addCard },
               'Add a card'
             ),
             _this.state.numberOfCards ? react.createElement(
               'button',
-              { className: 'App__button', onClick: _this.removeCard },
+              { className: 'ElementQueryExample__button', onClick: _this.removeCard },
               'Remove a card'
             ) : null
           )
         ),
         react.createElement(
           'div',
-          { className: 'App__content' },
+          { className: 'ElementQueryExample__content' },
           _this.getCards(),
           react.createElement(ResizeableResponsiveCard, { startSize: 425 }),
           react.createElement(ResizeableResponsiveCard, { startSize: 325 }),
@@ -2101,15 +5112,230 @@ var App = function (_Component) {
     return _this;
   }
 
+  createClass(ElementQueryExample, [{
+    key: 'render',
+    value: function render() {
+      return react.createElement(Sentinel, { observe: this.getBodyWidth, render: this.renderElementQueryExample });
+    }
+  }]);
+  return ElementQueryExample;
+}(react_2);
+
+var css$12 = ".AnimatingSquare {\n  height: 100px;\n  width: 100px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }\n  .AnimatingSquare:nth-child(1n) {\n    background-color: #593650; }\n  .AnimatingSquare:nth-child(2n) {\n    background-color: #557359; }\n  .AnimatingSquare:nth-child(3n) {\n    background-color: #D9D2C5; }\n  .AnimatingSquare:nth-child(4n) {\n    background-color: #D9BB96; }\n  .AnimatingSquare:nth-child(5n) {\n    background-color: #BF6860; }\n";
+__$$styleInject(css$12);
+
+var AnimatingSquare = function (_Component) {
+  inherits(AnimatingSquare, _Component);
+
+  function AnimatingSquare() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    classCallCheck(this, AnimatingSquare);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = AnimatingSquare.__proto__ || Object.getPrototypeOf(AnimatingSquare)).call.apply(_ref, [this].concat(args))), _this), _this.animate = function (_ref2) {
+      var scale = _ref2.scale,
+          rotate = _ref2.rotate,
+          shrinking = _ref2.shrinking;
+
+      var needsToShrinkMore = shrinking && scale > 0;
+      var needsToStartShrinking = !shrinking && scale >= 1;
+
+      if (needsToStartShrinking || needsToShrinkMore) {
+        return {
+          scale: scale - 0.01,
+          rotate: rotate + 9,
+          shrinking: true
+        };
+      }
+
+      return {
+        scale: scale + 0.01,
+        rotate: rotate + 9,
+        shrinking: false
+      };
+    }, _this.initial = { scale: 0, rotate: 0 }, _this.renderSquare = function (_ref3) {
+      var scale = _ref3.scale,
+          rotate = _ref3.rotate;
+
+      var style = { transform: 'scale(' + scale + ') rotateZ(' + rotate + 'deg)' };
+      return react.createElement('div', {
+        className: 'AnimatingSquare',
+        style: style
+      });
+    }, _temp), possibleConstructorReturn(_this, _ret);
+  }
+
+  createClass(AnimatingSquare, [{
+    key: 'render',
+    value: function render() {
+      var priority = this.props.priority;
+
+
+      return react.createElement(Sentinel, {
+        initial: this.initial,
+        lowPriority: !priority,
+        observe: this.animate,
+        render: this.renderSquare
+      });
+    }
+  }]);
+  return AnimatingSquare;
+}(react_2);
+
+AnimatingSquare.propTypes = { priority: propTypes.bool.isRequired };
+
+var css$14 = ".AnimationExample {\n  min-height: 100vh;\n  width: 100vw;\n  padding: 24px; }\n\n.AnimationExample__header {\n  margin-bottom: 24px; }\n\n.AnimationExample__title {\n  margin-top: 0;\n  font-size: 2rem;\n  line-height: 2.2rem;\n  font-weight: 600;\n  margin-bottom: 8px; }\n\n.AnimationExample__tidbit {\n  margin-top: 0;\n  font-size: .8rem;\n  max-width: 30em;\n  margin-bottom: 8px; }\n\n.AnimationExample__content {\n  display: flex;\n  flex-flow: wrap; }\n\n.AnimationExample__button {\n  font-size: .7rem;\n  padding: .5em 1em;\n  color: #444;\n  border: 1px solid #999;\n  border: transparent;\n  background-color: #E6E6E6;\n  text-decoration: none;\n  border-radius: 2px;\n  cursor: pointer;\n  margin: 8px 8px 8px 0;\n  font-weight: 500; }\n  .AnimationExample__button:active, .AnimationExample__button:focus {\n    outline: 0; }\n  .AnimationExample__button:disabled {\n    pointer-events: none; }\n  .AnimationExample__button.is-cta {\n    background-color: #F4828C;\n    color: #ffffff; }\n";
+__$$styleInject(css$14);
+
+var AnimationExample = function (_Component) {
+  inherits(AnimationExample, _Component);
+
+  function AnimationExample() {
+    classCallCheck(this, AnimationExample);
+
+    var _this = possibleConstructorReturn(this, (AnimationExample.__proto__ || Object.getPrototypeOf(AnimationExample)).call(this));
+
+    _this.getBodyWidth = function () {
+      return { width: document.body.offsetWidth };
+    };
+
+    _this.getSquares = function () {
+      var _this$state = _this.state,
+          numberOfSquares = _this$state.numberOfSquares,
+          priority = _this$state.priority;
+
+      var squares = [];
+
+      for (var i = 0; i < numberOfSquares; i += 1) {
+        squares.push(react.createElement(AnimatingSquare, { key: i, priority: priority }));
+      }
+
+      return squares;
+    };
+
+    _this.addSquare = function () {
+      return _this.setState(function (state) {
+        return { numberOfSquares: state.numberOfSquares + 1 };
+      });
+    };
+
+    _this.removeSquare = function () {
+      return _this.setState(function (state) {
+        return { numberOfSquares: state.numberOfSquares - 1 };
+      });
+    };
+
+    _this.togglePriority = function () {
+      return _this.setState(function (state) {
+        return { priority: !state.priority };
+      });
+    };
+
+    _this.state = { numberOfSquares: 0, priority: true };
+    return _this;
+  }
+
+  createClass(AnimationExample, [{
+    key: 'render',
+    value: function render() {
+      var priority = this.state.priority;
+
+
+      return react.createElement(
+        'div',
+        { className: 'AnimationExample' },
+        react.createElement(
+          'div',
+          { className: 'AnimationExample__header' },
+          react.createElement(
+            'h2',
+            { className: 'AnimationExample__title' },
+            'Animation Example Demo'
+          ),
+          react.createElement(
+            'p',
+            { className: 'AnimationExample__tidbit' },
+            'Since its all requestAnimationFrame under the hood, you could use React Sentinel to create performant animations! If you switch to low priority, the animations may stop sporadically, but the UI thread shouldnt drop frames!'
+          ),
+          react.createElement(
+            'div',
+            { className: 'AnimationExample__buttons' },
+            react.createElement(
+              'button',
+              { className: 'AnimationExample__button is-cta', onClick: this.addSquare },
+              'Add a square'
+            ),
+            this.state.numberOfSquares ? react.createElement(
+              'button',
+              { className: 'AnimationExample__button', onClick: this.removeSquare },
+              'Remove a square'
+            ) : null,
+            react.createElement(
+              'button',
+              { className: 'AnimationExample__button', onClick: this.togglePriority },
+              'Switch to ',
+              priority ? 'low' : 'high',
+              ' priority'
+            )
+          )
+        ),
+        react.createElement(
+          'div',
+          { className: 'AnimationExample__content' },
+          react.createElement(AnimatingSquare, { priority: priority }),
+          react.createElement(AnimatingSquare, { priority: priority }),
+          this.getSquares()
+        )
+      );
+    }
+  }]);
+  return AnimationExample;
+}(react_2);
+
+var css$16 = "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n  box-sizing: border-box; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n";
+__$$styleInject(css$16);
+
+var css$18 = "/*! Typebase.less v0.1.0 | MIT License */\n/* Setup */\nhtml {\n  /* Change default typefaces here */\n  font-family: serif;\n  font-size: 137.5%;\n  -webkit-font-smoothing: antialiased; }\n\n/* Copy & Lists */\np {\n  line-height: .9rem;\n  margin-top: 1.5rem;\n  margin-bottom: 0; }\n\nul,\nol {\n  margin-top: 1.5rem;\n  margin-bottom: 1.5rem; }\n\nul li,\nol li {\n  line-height: 1.5rem; }\n\nul ul,\nol ul,\nul ol,\nol ol {\n  margin-top: 0;\n  margin-bottom: 0; }\n\nblockquote {\n  line-height: 1.5rem;\n  margin-top: 1.5rem;\n  margin-bottom: 1.5rem; }\n\n/* Headings */\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  /* Change heading typefaces here */\n  font-family: sans-serif;\n  margin-top: 1.5rem;\n  margin-bottom: 0;\n  line-height: 1.5rem; }\n\nh1 {\n  font-size: 4.242rem;\n  line-height: 4.5rem;\n  margin-top: 3rem; }\n\nh2 {\n  font-size: 2.828rem;\n  line-height: 3rem;\n  margin-top: 3rem; }\n\nh3 {\n  font-size: 1.414rem; }\n\nh4 {\n  font-size: 0.707rem; }\n\nh5 {\n  font-size: 0.4713333333333333rem; }\n\nh6 {\n  font-size: 0.3535rem; }\n\n/* Tables */\ntable {\n  margin-top: 1.5rem;\n  border-spacing: 0px;\n  border-collapse: collapse; }\n\ntable td,\ntable th {\n  padding: 0;\n  line-height: 33px; }\n\n/* Code blocks */\ncode {\n  vertical-align: bottom;\n  font-family: Menlo,Monaco,\"Courier New\",Courier,monospace;\n  background-color: #d3d3d352;\n  color: #e16883;\n  padding: 2px;\n  font-size: .9em; }\n\n/* Leading paragraph text */\n.lead {\n  font-size: 1.414rem; }\n\n/* Hug the block above you */\n.hug {\n  margin-top: 0; }\n";
+__$$styleInject(css$18);
+
+var css$20 = ".App {\n  min-height: 100vh;\n  width: 100vw;\n  background-color: #addcca;\n  color: #444; }\n";
+__$$styleInject(css$20);
+
+var App = function (_Component) {
+  inherits(App, _Component);
+
+  function App() {
+    classCallCheck(this, App);
+    return possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+  }
+
   createClass(App, [{
     key: 'render',
     value: function render() {
-      return react.createElement(Sentinel, { observe: this.getBodyWidth, render: this.renderApp });
+      return react.createElement(
+        'div',
+        { className: 'App' },
+        react.createElement(Navbar, null),
+        react.createElement(GithubCorner, null),
+        react.createElement(Route, { exact: true, path: '/', component: ElementQueryExample }),
+        react.createElement(Route, { path: '/element-query-example', component: ElementQueryExample }),
+        react.createElement(Route, { path: '/animation-example', component: AnimationExample })
+      );
     }
   }]);
   return App;
 }(react_2);
 
-reactDom_1(react.createElement(App, null), document.querySelectorAll('main')[0]);
+reactDom_1(react.createElement(
+  BrowserRouter,
+  null,
+  react.createElement(App, null)
+), document.querySelectorAll('main')[0]);
 
 }());

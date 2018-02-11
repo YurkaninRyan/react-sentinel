@@ -1,33 +1,34 @@
-.App {
+.ElementQueryExample {
   min-height: 100vh;
   width: 100vw;
-  background-color: #addcca;
-  color: #444;
   padding: 24px;
 }
 
-.App__header {
+.ElementQueryExample__header {
   margin-bottom: 24px;
 }
 
-.App__title {
+.ElementQueryExample__title {
   margin-top: 0;
   font-size: 2rem;
   line-height: 2.2rem;
   font-weight: 600;
+  margin-bottom: 8px;
 }
 
-.App__tidbit {
+.ElementQueryExample__tidbit {
   margin-top: 0;
   font-size: .8rem;
+  max-width: 30em;
+  margin-bottom: 8px;
 }
 
-.App__content {
+.ElementQueryExample__content {
   display: flex;
   flex-flow: wrap;
 }
 
-.App__button {
+.ElementQueryExample__button {
   font-size: .7rem;
   padding: .5em 1em;
   color: #444;
