@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-import '../Emoji/Emoji.scss';
+import 'components/Emoji/Emoji.scss';
 
 export default class Emoji extends PureComponent {
   render() {

@@ -1,4 +1,4 @@
-# React Sentinel - 0.1.6
+# React Sentinel - 0.1.7
 
 <a href="./package.json">
   <img src="https://img.shields.io/npm/v/react-sentinel.svg?maxAge=3600&label=react-sentinel&colorB=007ec6">
@@ -46,9 +46,30 @@ In this simple example, you can design a dumb card that takes a size property, a
 # Props
 `render` - A function that returns JSX.  It get's passed in Sentinel's state, which is just whatever object you return in the `observe` function.
 
+<<<<<<< HEAD
 `observe` - Your chance to update Sentinel's state.  Attempts to run once every 15ms.  Returning a shallowly equal object doesn't cause a re-render.
+=======
+`observe` - You're chance to update Sentinel's state.  Attempts to run once every 15ms.  Returning a shallowly equal object doesn't cause a re-render. In here you recieve the previous return value, so you can do incremental updates.
+>>>>>>> release/0.1.7
 
 `lowPriority` - Defaults to false.  If set to `true` it switches from using `requestAnimationFrame` to using `requestIdleCallback`.  For browsers that don't support `requestIdleCallback` this is basically a no-op.
+
+`initial` - Defaults to an empty object.  This is what the first value of Sentinel should be.
+
+# Instance Functions
+If you want finer control over when the polling should actually be happening, you can use some function exposed on each Sentinel Instance by adding a ref to each one.  Once you have the ref, you can use the following functions:
+
+`Sentinel.watch` - Begins polling <br>
+`Sentinel.stop` - Stops polling
+
+# Similar Alternatives
+* [eq.js](https://github.com/snugug/eq.js) - Designed to solve purely the element query problem. Allows you to set data properties for the sizes, and read from an attribute to see the current size.
+
+* [react-element-query](https://github.com/joeybaker/react-element-query) - Designed to solve purely the element query problem.  You supply sizes and it allows you to make class names out of them.
+
+* [CSS Element Queries](https://github.com/marcj/css-element-queries) Designed to solve purely the element query problem.  Allows you to write element queries directly into your css!
+
+If you know of any other libraries that are similar to this one, feel free to submit a PR!  
 
 # Contributing
 First run `yarn` to install the project's dependencies.  Here are a list of commands for different scenarios.
