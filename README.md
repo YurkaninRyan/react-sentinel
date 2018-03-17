@@ -1,4 +1,4 @@
-# React Sentinel - 0.1.7
+# React Sentinel - 0.1.8
 
 <a href="./package.json">
   <img src="https://img.shields.io/npm/v/react-sentinel.svg?maxAge=3600&label=react-sentinel&colorB=007ec6">
@@ -6,8 +6,8 @@
 <a href="https://travis-ci.org/YurkaninRyan/react-sentinel">
   <img src="https://travis-ci.org/YurkaninRyan/react-sentinel.svg?branch=master">
 </a>
-<a href="https://unpkg.com/react-sentinel@0.1.7/dist/react-sentinel.browser.js">
-  <img src="http://img.badgesize.io/https://unpkg.com/react-sentinel@0.1.7/dist/react-sentinel.browser.js?compression=gzip&amp;label=react--sentinel">
+<a href="https://unpkg.com/react-sentinel@0.1.8/dist/react-sentinel.browser.js">
+  <img src="http://img.badgesize.io/https://unpkg.com/react-sentinel@0.1.8/dist/react-sentinel.browser.js?compression=gzip&amp;label=react--sentinel">
 </a>
 <a href="./License.md">
   <img src="https://img.shields.io/npm/l/slate.svg?maxAge=3600">
