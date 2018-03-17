@@ -8,10 +8,10 @@
   "scripts": {
     "release": "generate-release",
     "develop": "./node_modules/.bin/rollup -c -w",
-    "test": "yarn prepare && ./node_modules/.bin/jest",
+    "test": "yarn prepublish && ./node_modules/.bin/jest",
     "lint": "node ./node_modules/eslint/bin/eslint src",
-    "gh-pages": "yarn prepare && gh-pages --dist ./example",
-    "prepare": "NODE_ENV=production ./node_modules/.bin/rollup -c"
+    "gh-pages": "yarn prepublish && gh-pages --dist ./example",
+    "prepublishOnly": "NODE_ENV=production ./node_modules/.bin/rollup -c"
   },
   "repository": {
     "type": "git",
