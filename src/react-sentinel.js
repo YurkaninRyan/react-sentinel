@@ -9,7 +9,9 @@ export default class Sentinel extends Component {
     this.state = props.initial;
   }
 
-  componentDidMount() { this.watch(); }
+  componentDidMount() {
+    this.watch();
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.lowPriority === this.props.lowPriority) return;
 
@@ -24,17 +26,27 @@ export default class Sentinel extends Component {
   }
 
   setLoopingFunctions = (lowPriority) => {
-    // Low priority means use requestIdleCallback
-    // fallback to requestAnimationFrame
-    const requestCheck = lowPriority ?
-      requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
+    /**
+     *  SAFARI COMPAT:
+     *  requestIdleCallback doesn't exist, so we need to check for it on window.
+     */
+    const requestCheck = lowPriority
+      ? window.requestIdleCallback || window.requestAnimationFrame
+      : window.requestAnimationFrame;
 
-    const cancelCheck = lowPriority ?
-      cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+    const cancelCheck = lowPriority
+      ? window.cancelIdleCallback || window.cancelAnimationFrame
+      : window.cancelAnimationFrame;
+
+    /**
+     *  FIREFOX COMPAT
+     *  Chrome doesn't seem to mind not binding window, however
+     *  FF throws up
+     */
 
     this.requestCheck = requestCheck.bind(window);
     this.cancelCheck = cancelCheck.bind(window);
-  }
+  };
 
   watchPID = null;
   checkPID = null;
@@ -51,19 +63,22 @@ export default class Sentinel extends Component {
 
     this.watchPID = null;
     this.checkPID = null;
-  }
+  };
 
   check = () => {
     const { observe } = this.props;
     const updates = observe(this.state);
 
-    if (!updates) { return this.watch(); }
+    if (!updates) {
+      return this.watch();
+    }
     const oldProps = Object.keys(this.state);
     const newProps = Object.keys(updates);
 
     // first, naive check to see if lengths are different.
     // If that doesn't pass, shallow compare all the keys in both objects.
-    const mismatch = oldProps.length !== newProps.length ||
+    const mismatch =
+      oldProps.length !== newProps.length ||
       oldProps.some(currPropKey => this.state[currPropKey] !== updates[currPropKey]) ||
       newProps.some(currPropKey => updates[currPropKey] !== this.state[currPropKey]);
 
