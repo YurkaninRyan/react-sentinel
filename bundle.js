@@ -3970,11 +3970,19 @@ var Sentinel = function (_Component) {
     var _this = possibleConstructorReturn(this, (Sentinel.__proto__ || Object.getPrototypeOf(Sentinel)).call(this));
 
     _this.setLoopingFunctions = function (lowPriority) {
-      // Low priority means use requestIdleCallback
-      // fallback to requestAnimationFrame
-      var requestCheck = lowPriority ? requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
+      /**
+       *  SAFARI COMPAT:
+       *  requestIdleCallback doesn't exist, so we need to check for it on window.
+       */
+      var requestCheck = lowPriority ? window.requestIdleCallback || window.requestAnimationFrame : window.requestAnimationFrame;
 
-      var cancelCheck = lowPriority ? cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+      var cancelCheck = lowPriority ? window.cancelIdleCallback || window.cancelAnimationFrame : window.cancelAnimationFrame;
+
+      /**
+       *  FIREFOX COMPAT
+       *  Chrome doesn't seem to mind not binding window, however
+       *  FF throws up
+       */
 
       _this.requestCheck = requestCheck.bind(window);
       _this.cancelCheck = cancelCheck.bind(window);
