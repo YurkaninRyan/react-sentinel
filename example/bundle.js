@@ -21266,7 +21266,7 @@ var Navbar = function (_Component) {
             null,
             react.createElement(
               Link,
-              { className: 'Navbar__link', to: '/react-sentinel/element-query-example' },
+              { className: 'Navbar__link', to: '/element-query-example' },
               'Element Query Example'
             )
           ),
@@ -21275,7 +21275,7 @@ var Navbar = function (_Component) {
             null,
             react.createElement(
               Link,
-              { className: 'Navbar__link', to: '/react-sentinel/animation-example' },
+              { className: 'Navbar__link', to: '/animation-example' },
               'Animation Example'
             )
           )
@@ -22635,10 +22635,6 @@ __$$styleInject(css$18);
 var css$20 = ".App {\n  min-height: 100vh;\n  width: 100vw;\n  background-color: #addcca;\n  color: #444; }\n";
 __$$styleInject(css$20);
 
-var goToIndex = function goToIndex() {
-  return react.createElement(Redirect, { to: '/react-sentinel/element-query-example' });
-};
-
 var App = function (_Component) {
   inherits(App, _Component);
 
@@ -22655,10 +22651,13 @@ var App = function (_Component) {
         { className: 'App' },
         react.createElement(Navbar, null),
         react.createElement(GithubCorner, null),
-        react.createElement(Route, { exact: true, path: '/', component: goToIndex }),
-        react.createElement(Route, { exact: true, path: '/react-sentinel/', component: goToIndex }),
-        react.createElement(Route, { path: '/react-sentinel/element-query-example', component: ElementQueryExample }),
-        react.createElement(Route, { path: '/react-sentinel/animation-example', component: AnimationExample })
+        react.createElement(
+          Switch,
+          null,
+          react.createElement(Route, { path: '/element-query-example', component: ElementQueryExample }),
+          react.createElement(Route, { path: '/animation-example', component: AnimationExample }),
+          react.createElement(Redirect, { to: '/element-query-example' })
+        )
       );
     }
   }]);
@@ -22666,7 +22665,7 @@ var App = function (_Component) {
 }(react_2);
 
 reactDom_1(react.createElement(
-  BrowserRouter,
+  HashRouter,
   null,
   react.createElement(App, null)
 ), document.querySelectorAll('main')[0]);

@@ -10,10 +10,10 @@ export default class Navbar extends Component {
         <div className="Navbar__name">Sentinel</div>
         <ul className="Navbar__links">
           <li>
-            <Link className="Navbar__link" to="/react-sentinel/element-query-example">Element Query Example</Link>
+            <Link className="Navbar__link" to="/element-query-example">Element Query Example</Link>
           </li>
           <li>
-            <Link className="Navbar__link" to="/react-sentinel/animation-example">Animation Example</Link>
+            <Link className="Navbar__link" to="/animation-example">Animation Example</Link>
           </li>
         </ul>
       </div>
