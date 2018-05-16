@@ -48,4 +48,5 @@ Thumbs.db
 node_modules/
 coverage/
 dist/
+example/bundle.js
 yarn-error.log
