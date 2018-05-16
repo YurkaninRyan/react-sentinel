@@ -3941,7 +3941,7 @@ var Navbar = function (_Component) {
             null,
             react.createElement(
               Link,
-              { className: 'Navbar__link', to: '/react-sentinel/element-query-example' },
+              { className: 'Navbar__link', to: '/element-query-example' },
               'Element Query Example'
             )
           ),
@@ -3950,7 +3950,7 @@ var Navbar = function (_Component) {
             null,
             react.createElement(
               Link,
-              { className: 'Navbar__link', to: '/react-sentinel/animation-example' },
+              { className: 'Navbar__link', to: '/animation-example' },
               'Animation Example'
             )
           )
@@ -5326,9 +5326,9 @@ var App = function (_Component) {
         react.createElement(
           Switch,
           null,
-          react.createElement(Route, { path: '/react-sentinel/element-query-example', component: ElementQueryExample }),
-          react.createElement(Route, { path: '/react-sentinel/animation-example', component: AnimationExample }),
-          react.createElement(Redirect, { to: '/react-sentinel/element-query-example' })
+          react.createElement(Route, { path: '/element-query-example', component: ElementQueryExample }),
+          react.createElement(Route, { path: '/animation-example', component: AnimationExample }),
+          react.createElement(Redirect, { to: '/element-query-example' })
         )
       );
     }
@@ -5337,7 +5337,7 @@ var App = function (_Component) {
 }(react_2);
 
 reactDom_1(react.createElement(
-  BrowserRouter,
+  HashRouter,
   null,
   react.createElement(App, null)
 ), document.querySelectorAll('main')[0]);

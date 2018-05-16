@@ -18,9 +18,9 @@ export default class App extends Component {
         <Navbar />
         <GithubCorner />
         <Switch>
-          <Route path="/react-sentinel/element-query-example" component={ElementQueryExample} />
-          <Route path="/react-sentinel/animation-example" component={AnimationExample} />
-          <Redirect to="/react-sentinel/element-query-example" />
+          <Route path="/element-query-example" component={ElementQueryExample} />
+          <Route path="/animation-example" component={AnimationExample} />
+          <Redirect to="/element-query-example" />
         </Switch>
       </div>
     );
