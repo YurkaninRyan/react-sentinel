@@ -11,7 +11,7 @@
     "build": "NODE_ENV=production rollup -c",
     "test": "yarn build && jest",
     "lint": "eslint src",
-    "gh-pages": "rollup -c && gh-pages --dist ./example",
+    "gh-pages": "yarn build -c && gh-pages --dist ./example",
     "prepublishOnly": "yarn build"
   },
   "repository": {
