@@ -2,20 +2,24 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 export default class Sentinel extends Component {
-  constructor(props) {
+  constructor({ lowPriority, initial }) {
     super();
 
-    this.setLoopingFunctions(props.lowPriority);
-    this.state = props.initial;
+    this.setLoopingFunctions(lowPriority);
+    this.state = initial;
   }
 
-  componentDidMount() { this.watch(); }
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.lowPriority === this.props.lowPriority) return;
+  componentDidMount() {
+    this.watch();
+  }
+
+  componentDidUpdate({ lowPriority: previousLowPriority }) {
+    const { lowPriority } = this.props;
+    if (lowPriority === previousLowPriority) return;
 
     // Make a clean slate, since we will be changing functions.
     this.stop();
-    this.setLoopingFunctions(nextProps.lowPriority);
+    this.setLoopingFunctions(lowPriority);
     this.watch();
   }
 
@@ -24,46 +28,55 @@ export default class Sentinel extends Component {
   }
 
   setLoopingFunctions = (lowPriority) => {
-    // Low priority means use requestIdleCallback
-    // fallback to requestAnimationFrame
-    const requestCheck = lowPriority ?
-      requestIdleCallback || requestAnimationFrame : requestAnimationFrame;
+    /**
+     *  SAFARI COMPAT:
+     *  requestIdleCallback doesn't exist, so we need to check for it on window.
+     */
+    const observe = lowPriority
+      ? window.requestIdleCallback || window.requestAnimationFrame
+      : window.requestAnimationFrame;
 
-    const cancelCheck = lowPriority ?
-      cancelIdleCallback || cancelAnimationFrame : cancelAnimationFrame;
+    const kill = lowPriority
+      ? window.cancelIdleCallback || window.cancelAnimationFrame
+      : window.cancelAnimationFrame;
 
-    this.requestCheck = requestCheck.bind(window);
-    this.cancelCheck = cancelCheck.bind(window);
-  }
-
-  watchPID = null;
-  checkPID = null;
+    /**
+     *  FIREFOX COMPAT
+     *  Chrome doesn't seem to mind not binding window, however
+     *  FF throws up
+     */
+    this.observe = observe.bind(window);
+    this.kill = kill.bind(window);
+  };
 
   watch = () => {
-    this.watchPID = window.setTimeout(() => {
-      this.checkPID = this.requestCheck(this.check);
-    }, 0);
+    this.observer = this.observe(this.deriveUpdatesByObserving);
   };
 
   stop = () => {
-    clearTimeout(this.watchPID);
-    this.cancelCheck(this.checkPID);
+    // No-op, there is no observation happening.
+    if (!this.observer) { return; }
 
-    this.watchPID = null;
-    this.checkPID = null;
-  }
+    this.kill(this.observer);
+    this.observer = null;
+  };
 
-  check = () => {
-    const { observe } = this.props;
+  deriveUpdatesByObserving = () => {
+    const { observe, interval } = this.props;
     const updates = observe(this.state);
 
-    if (!updates) { return this.watch(); }
+    if (!updates) {
+      return interval ?
+        window.setTimeout(this.watch, interval) : this.watch();
+    }
+
     const oldProps = Object.keys(this.state);
     const newProps = Object.keys(updates);
 
     // first, naive check to see if lengths are different.
     // If that doesn't pass, shallow compare all the keys in both objects.
-    const mismatch = oldProps.length !== newProps.length ||
+    const mismatch =
+      oldProps.length !== newProps.length ||
       oldProps.some(currPropKey => this.state[currPropKey] !== updates[currPropKey]) ||
       newProps.some(currPropKey => updates[currPropKey] !== this.state[currPropKey]);
 
@@ -71,7 +84,8 @@ export default class Sentinel extends Component {
       this.setState(updates);
     }
 
-    return this.watch();
+    return interval ?
+      window.setTimeout(this.watch, interval) : this.watch();
   };
 
   render() {
@@ -83,6 +97,7 @@ Sentinel.propTypes = {
   observe: PropTypes.func.isRequired,
   render: PropTypes.func.isRequired,
   lowPriority: PropTypes.bool,
+  interval: PropTypes.number,
 
   // eslint-disable-next-line react/forbid-prop-types
   initial: PropTypes.object,
@@ -91,4 +106,5 @@ Sentinel.propTypes = {
 Sentinel.defaultProps = {
   lowPriority: false,
   initial: {},
+  interval: null,
 };

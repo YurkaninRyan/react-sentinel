@@ -1,4 +1,4 @@
-# React Sentinel - 0.1.7
+# React Sentinel - 0.1.8
 
 <a href="./package.json">
   <img src="https://img.shields.io/npm/v/react-sentinel.svg?maxAge=3600&label=react-sentinel&colorB=007ec6">
@@ -6,8 +6,8 @@
 <a href="https://travis-ci.org/YurkaninRyan/react-sentinel">
   <img src="https://travis-ci.org/YurkaninRyan/react-sentinel.svg?branch=master">
 </a>
-<a href="https://unpkg.com/react-sentinel@0.1.7/dist/react-sentinel.browser.js">
-  <img src="http://img.badgesize.io/https://unpkg.com/react-sentinel@0.1.7/dist/react-sentinel.browser.js?compression=gzip&amp;label=react--sentinel">
+<a href="https://unpkg.com/react-sentinel@0.1.8/dist/react-sentinel.browser.js">
+  <img src="http://img.badgesize.io/https://unpkg.com/react-sentinel@0.1.8/dist/react-sentinel.browser.js?compression=gzip&amp;label=react--sentinel">
 </a>
 <a href="./License.md">
   <img src="https://img.shields.io/npm/l/slate.svg?maxAge=3600">
@@ -54,6 +54,8 @@ In this simple example, you can design a dumb card that takes a size property, a
 `lowPriority` - Defaults to false.  If set to `true` it switches from using `requestAnimationFrame` to using `requestIdleCallback`.  For browsers that don't support `requestIdleCallback` this is basically a no-op.
 
 `initial` - Defaults to an empty object.  This is what the first value of Sentinel should be.
+
+`interval` - Defaults to being instant. Determines the time between observe checks.  Use this if you don't think you will be updating often and want to increase performance.
 
 # Instance Functions
 If you want finer control over when the polling should actually be happening, you can use some function exposed on each Sentinel Instance by adding a ref to each one.  Once you have the ref, you can use the following functions:

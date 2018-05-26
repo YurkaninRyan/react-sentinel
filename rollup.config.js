@@ -4,7 +4,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
 import serve from 'rollup-plugin-serve';
-import uglify from 'rollup-plugin-uglify';
+import { uglify } from 'rollup-plugin-uglify';
 import include from 'rollup-plugin-includepaths';
 import pkg from './package.json';
 
@@ -76,6 +76,7 @@ export default [
               modules: false,
             },
           ],
+          'stage-2',
         ],
         plugins: [
           'external-helpers',
